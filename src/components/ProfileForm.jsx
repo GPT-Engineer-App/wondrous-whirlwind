@@ -1,26 +1,37 @@
 import React from 'react';
+import { useForm } from 'react-hook-form';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
-const ProfileForm = ({ onSave, onCancel }) => {
+const ProfileForm = ({ onSave, onCancel, initialData }) => {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: initialData
+  });
+
+  const onSubmit = (data) => {
+    onSave(data);
+  };
+
   return (
-    <form onSubmit={onSave} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="fullName">Full Name</Label>
-        <Input id="fullName" placeholder="Enter your full name" />
+        <Label htmlFor="name">Full Name</Label>
+        <Input id="name" {...register("name", { required: "Name is required" })} />
+        {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
       </div>
       
       <div className="space-y-2">
         <Label htmlFor="email">Email Address</Label>
-        <Input id="email" type="email" placeholder="Enter your email" />
+        <Input id="email" type="email" {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email address" } })} />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
       </div>
       
       <div className="space-y-2">
         <Label htmlFor="occupation">Occupation</Label>
-        <Select>
+        <Select onValueChange={(value) => register("occupation").onChange({ target: { value } })}>
           <SelectTrigger>
             <SelectValue placeholder="Select your occupation" />
           </SelectTrigger>
@@ -35,12 +46,12 @@ const ProfileForm = ({ onSave, onCancel }) => {
       
       <div className="space-y-2">
         <Label htmlFor="interests">Interests</Label>
-        <Textarea id="interests" placeholder="Enter your interests (comma-separated)" />
+        <Textarea id="interests" {...register("interests")} placeholder="Enter your interests (comma-separated)" />
       </div>
       
       <div className="space-y-2">
         <Label htmlFor="bio">Bio</Label>
-        <Textarea id="bio" placeholder="Tell us about yourself" />
+        <Textarea id="bio" {...register("bio")} placeholder="Tell us about yourself" />
       </div>
       
       <div className="flex justify-end space-x-4">
