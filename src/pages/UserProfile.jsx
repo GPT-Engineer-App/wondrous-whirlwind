@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ProfileHeader from '../components/ProfileHeader';
 import ProfileForm from '../components/ProfileForm';
 import ProfilePictureUpload from '../components/ProfilePictureUpload';
@@ -19,11 +19,32 @@ const fetchUserProfile = async () => {
   };
 };
 
+const updateUserProfile = async (userData) => {
+  // Simulating an API call
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return userData;
+};
+
 const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const queryClient = useQueryClient();
+
   const { data: user, isLoading, isError, error } = useQuery({
     queryKey: ['userProfile'],
     queryFn: fetchUserProfile,
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: updateUserProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['userProfile']);
+      setIsEditing(false);
+      toast.success('Profile updated successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to update profile. Please try again.');
+      console.error('Error updating profile:', error);
+    },
   });
 
   const handleEdit = () => {
@@ -31,15 +52,7 @@ const UserProfile = () => {
   };
 
   const handleSave = async (formData) => {
-    try {
-      // Simulating an API call to save data
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setIsEditing(false);
-      toast.success('Profile updated successfully');
-    } catch (error) {
-      toast.error('Failed to update profile. Please try again.');
-      console.error('Error updating profile:', error);
-    }
+    updateProfileMutation.mutate(formData);
   };
 
   const handleCancel = () => {
