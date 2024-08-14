@@ -90,14 +90,18 @@ const Matching = () => {
       <div className="mb-8 space-y-4">
         <div>
           <label className="block text-sm font-medium mb-2">Age Range</label>
-          <Slider
-            value={ageRange}
-            onValueChange={setAgeRange}
-            max={100}
-            step={1}
-            className="max-w-sm"
-          />
-          <p className="text-sm mt-1">Age: {ageRange[0]} - {ageRange[1]}</p>
+          <div className="flex items-center space-x-4 max-w-sm">
+            <Slider
+              value={ageRange}
+              onValueChange={setAgeRange}
+              max={100}
+              step={1}
+              className="flex-grow"
+            />
+            <span className="text-sm whitespace-nowrap">
+              {ageRange[0]} - {ageRange[1]}
+            </span>
+          </div>
         </div>
         
         <Input
