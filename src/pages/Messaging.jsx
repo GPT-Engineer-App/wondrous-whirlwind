@@ -82,7 +82,7 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([
     { id: 1, text: 'Hey there!', sender: 'other', timestamp: '10:00 AM', read: true },
     { id: 2, text: 'Hi! How are you?', sender: 'me', timestamp: '10:05 AM', read: true },
-    { id: 3, text: 'I'm doing great, thanks for asking!', sender: 'other', timestamp: '10:10 AM', read: false },
+    { id: 3, text: "I'm doing great, thanks for asking!", sender: 'other', timestamp: '10:10 AM', read: false },
   ]);
 
   const handleSend = () => {
