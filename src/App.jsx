@@ -8,23 +8,27 @@ import MobileMenu from "./components/MobileMenu";
 
 const queryClient = new QueryClient();
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 const App = () => (
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <BrowserRouter>
-          <div className="pb-16 md:pb-0"> {/* Add padding to the bottom for mobile menu */}
-            <Routes>
-              {navItems.map(({ to, page }) => (
-                <Route key={to} path={to} element={page} />
-              ))}
-            </Routes>
-            <MobileMenu />
-          </div>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <BrowserRouter>
+            <div className="pb-16 md:pb-0"> {/* Add padding to the bottom for mobile menu */}
+              <Routes>
+                {navItems.map(({ to, page }) => (
+                  <Route key={to} path={to} element={page} />
+                ))}
+              </Routes>
+              <MobileMenu />
+            </div>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 );
 

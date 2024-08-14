@@ -54,9 +54,11 @@ const Matching = () => {
   const [location, setLocation] = useState("");
   const [interest, setInterest] = useState("");
 
-  const { data: matches, isLoading, error } = useQuery({
+  import { handleAsyncOperation } from '../utils/errorHandling';
+
+const { data: matches, isLoading, error } = useQuery({
     queryKey: ['matches'],
-    queryFn: fetchMatches,
+    queryFn: () => handleAsyncOperation(fetchMatches, 'Error fetching matches'),
   });
 
   const handleLike = (id) => {
