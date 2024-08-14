@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, MessageCircle } from 'lucide-react';
+import { handleAsyncOperation } from '../utils/errorHandling';
 
 const fetchMatches = async () => {
   // Simulated API call
@@ -54,9 +55,7 @@ const Matching = () => {
   const [location, setLocation] = useState("");
   const [interest, setInterest] = useState("");
 
-  import { handleAsyncOperation } from '../utils/errorHandling';
-
-const { data: matches, isLoading, error } = useQuery({
+  const { data: matches, isLoading, error } = useQuery({
     queryKey: ['matches'],
     queryFn: () => handleAsyncOperation(fetchMatches, 'Error fetching matches'),
   });
