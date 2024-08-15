@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SignUp from '../components/SignUp';
 import SignIn from '../components/SignIn';
 import GradientHeading from '../components/GradientHeading';
+import { login } from '../utils/auth';
+import { toast } from 'sonner';
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(true);
+  const navigate = useNavigate();
+
+  const handleLogin = (username, password) => {
+    if (login(username, password)) {
+      toast.success('Logged in successfully');
+      navigate('/');
+    } else {
+      toast.error('Invalid credentials');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
       <GradientHeading text={isSignUp ? "Join the Network" : "Welcome Back"} />
       <div className="w-full max-w-md">
-        {isSignUp ? <SignUp /> : <SignIn />}
+        {isSignUp ? <SignUp /> : <SignIn onLogin={handleLogin} />}
         <div className="text-center mt-4">
           <button
             onClick={() => setIsSignUp(!isSignUp)}
