@@ -1,18 +1,12 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Code, AlertCircle } from 'lucide-react';
 
 const TaskItem = ({ task }) => {
+  // Placeholder function for icons
   const getIcon = (iconName) => {
-    switch (iconName) {
-      case 'FileText':
-        return <FileText className="h-6 w-6" />;
-      case 'Code':
-        return <Code className="h-6 w-6" />;
-      default:
-        return <AlertCircle className="h-6 w-6" />;
-    }
+    // This function now returns a simple placeholder
+    return <span className="w-6 h-6 inline-block bg-gray-300 rounded-full mr-2"></span>;
   };
 
   return (
