@@ -1,12 +1,12 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarIcon } from "@radix-ui/react-icons";
+import { Calendar } from 'lucide-react';
 
 const EventItem = ({ event }) => {
   return (
     <Card className="w-full mb-4">
       <CardHeader className="flex flex-row items-center space-x-4">
-        <CalendarIcon className="h-6 w-6" />
+        <Calendar className="h-6 w-6" />
         <div>
           <CardTitle>{event.name}</CardTitle>
           <CardDescription>{event.date}</CardDescription>
