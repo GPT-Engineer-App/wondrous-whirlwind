@@ -23,7 +23,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <BrowserRouter>
-            <div className="pb-16 md:pb-0"> {/* Add padding to the bottom for mobile menu */}
+            <div className="pb-16 md:pb-0">
               <Routes>
                 {navItems.map(({ to, page }) => (
                   <Route key={to} path={to} element={page} />

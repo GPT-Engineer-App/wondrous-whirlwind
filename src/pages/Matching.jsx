@@ -8,7 +8,6 @@ import { Slider } from "@/components/ui/slider";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, MessageCircle } from 'lucide-react';
-import { handleAsyncOperation } from '../utils/errorHandling';
 
 const fetchMatches = async () => {
   // Simulated API call
@@ -57,7 +56,7 @@ const Matching = () => {
 
   const { data: matches, isLoading, error } = useQuery({
     queryKey: ['matches'],
-    queryFn: () => handleAsyncOperation(fetchMatches, 'Error fetching matches'),
+    queryFn: fetchMatches,
   });
 
   const handleLike = (id) => {
@@ -91,7 +90,7 @@ const Matching = () => {
       <div className="mb-8 space-y-4">
         <div>
           <label className="block text-sm font-medium mb-2">Age Range</label>
-          <div className="flex items-center space-x-4 max-w-sm">
+          <div className="flex items-center space-x-4">
             <Slider
               value={ageRange}
               onValueChange={setAgeRange}
@@ -99,7 +98,7 @@ const Matching = () => {
               step={1}
               className="flex-grow"
             />
-            <span className="text-sm whitespace-nowrap">
+            <span className="text-sm whitespace-nowrap w-20 text-right">
               {ageRange[0]} - {ageRange[1]}
             </span>
           </div>
