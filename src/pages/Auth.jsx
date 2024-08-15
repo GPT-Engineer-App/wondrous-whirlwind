@@ -10,12 +10,18 @@ const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(true);
   const navigate = useNavigate();
 
-  const handleLogin = (username, password) => {
-    if (login(username, password)) {
-      toast.success('Logged in successfully');
-      navigate('/');
-    } else {
-      toast.error('Invalid credentials');
+  const handleLogin = async (username, password) => {
+    try {
+      const success = await login(username, password);
+      if (success) {
+        toast.success('Logged in successfully');
+        navigate('/');
+      } else {
+        toast.error('Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('An error occurred during login. Please try again.');
     }
   };
 

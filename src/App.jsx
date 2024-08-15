@@ -15,6 +15,10 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      onError: (error) => {
+        console.error("Query error:", error);
+        // You can add more error handling here, like showing a toast notification
+      },
     },
   },
 });
