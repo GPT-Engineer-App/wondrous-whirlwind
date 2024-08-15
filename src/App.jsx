@@ -7,6 +7,7 @@ import { navItems } from "./nav-items";
 import MobileMenu from "./components/MobileMenu";
 import ErrorBoundary from './components/ErrorBoundary';
 import Onboarding from './components/Onboarding';
+import Auth from './pages/Auth';
 import { isAuthenticated } from './utils/auth';
 
 const queryClient = new QueryClient({
@@ -32,16 +33,13 @@ const App = () => (
             <div className="pb-16 md:pb-0">
               <Routes>
                 <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/auth" element={<Auth />} />
                 {navItems.map(({ to, page }) => (
                   <Route
                     key={to}
                     path={to}
                     element={
-                      to === '/auth' ? (
-                        page
-                      ) : (
-                        <PrivateRoute>{page}</PrivateRoute>
-                      )
+                      <PrivateRoute>{page}</PrivateRoute>
                     }
                   />
                 ))}
