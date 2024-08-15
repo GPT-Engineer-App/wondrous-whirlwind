@@ -1,15 +1,24 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Icons } from "@/components/ui/icons";
+import { FileText, Code, AlertCircle } from 'lucide-react';
 
 const TaskItem = ({ task }) => {
-  const IconComponent = Icons[task.icon] || Icons.default;
+  const getIcon = (iconName) => {
+    switch (iconName) {
+      case 'FileText':
+        return <FileText className="h-6 w-6" />;
+      case 'Code':
+        return <Code className="h-6 w-6" />;
+      default:
+        return <AlertCircle className="h-6 w-6" />;
+    }
+  };
 
   return (
     <Card className="w-full mb-4">
       <CardHeader className="flex flex-row items-center space-x-4">
-        <IconComponent className="h-6 w-6" />
+        {getIcon(task.icon)}
         <div>
           <CardTitle>{task.name}</CardTitle>
           <CardDescription>{task.description}</CardDescription>
