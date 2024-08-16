@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { navItems } from "./nav-items";
 import MobileMenu from "./components/MobileMenu";
 import ErrorBoundary from './components/ErrorBoundary';
-import Onboarding from './components/Onboarding';
+import Onboarding from './pages/Onboarding';
 import Auth from './pages/Auth';
 import { isAuthenticated } from './utils/auth';
 
@@ -17,7 +17,6 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       onError: (error) => {
         console.error("Query error:", error);
-        // You can add more error handling here, like showing a toast notification
       },
     },
   },
