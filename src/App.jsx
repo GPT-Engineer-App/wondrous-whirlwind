@@ -6,9 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { navItems } from "./nav-items";
 import MobileMenu from "./components/MobileMenu";
 import ErrorBoundary from './components/ErrorBoundary';
-import Onboarding from './pages/Onboarding';
+import Onboarding from './components/Onboarding';
 import Auth from './pages/Auth';
-import Homepage from './pages/Homepage';
 import { isAuthenticated } from './utils/auth';
 
 const queryClient = new QueryClient({
@@ -18,6 +17,7 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       onError: (error) => {
         console.error("Query error:", error);
+        // You can add more error handling here, like showing a toast notification
       },
     },
   },
@@ -38,14 +38,6 @@ const App = () => (
               <Routes>
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/auth" element={<Auth />} />
-                <Route
-                  path="/"
-                  element={
-                    <PrivateRoute>
-                      <Homepage />
-                    </PrivateRoute>
-                  }
-                />
                 {navItems.map(({ to, page }) => (
                   <Route
                     key={to}
