@@ -2,7 +2,7 @@ import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { navItems } from "./nav-items";
 import MobileMenu from "./components/MobileMenu";
 import ErrorBoundary from './components/ErrorBoundary';
@@ -32,7 +32,7 @@ const App = () => (
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
-          <BrowserRouter>
+          <Router>
             <div className="pb-16 md:pb-0">
               <Routes>
                 <Route path="/onboarding" element={<Onboarding />} />
@@ -50,7 +50,7 @@ const App = () => (
               </Routes>
               {isAuthenticated() && <MobileMenu />}
             </div>
-          </BrowserRouter>
+          </Router>
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>

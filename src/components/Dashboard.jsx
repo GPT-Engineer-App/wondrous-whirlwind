@@ -1,6 +1,5 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import MatchingAlgorithm from './MatchingAlgorithm';
 import NotificationSystem from './NotificationSystem';
 import { Button } from './ui/button';
@@ -24,8 +23,7 @@ const fetchHomepageData = async (userId) => {
   };
 };
 
-const Homepage = ({ userId }) => {
-  const navigate = useNavigate();
+const Dashboard = ({ userId }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['homepageData', userId],
     queryFn: () => fetchHomepageData(userId),
@@ -35,13 +33,14 @@ const Homepage = ({ userId }) => {
   if (error) return <div>Error loading homepage: {error.message}</div>;
 
   const handleItemClick = (type, id) => {
-    navigate(`/${type}/${id}`);
+    console.log(`Clicked ${type} with id ${id}`);
+    // Implement navigation or action based on the clicked item
   };
 
   return (
     <div className="p-6 bg-gray-900 text-white">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Homepage</h1>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
         <NotificationSystem userId={userId} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -95,4 +94,4 @@ const Homepage = ({ userId }) => {
   );
 };
 
-export default Homepage;
+export default Dashboard;
