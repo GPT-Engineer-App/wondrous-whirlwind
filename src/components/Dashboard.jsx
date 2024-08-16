@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import MatchingAlgorithm from './MatchingAlgorithm';
-import NotificationSystem from './NotificationSystem';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -32,7 +30,7 @@ const Dashboard = ({ userId }) => {
   const [newTask, setNewTask] = useState({ name: '', description: '' });
   const [editingTask, setEditingTask] = useState(null);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['dashboardData', userId],
     queryFn: () => fetchDashboardData(userId),
   });
@@ -46,7 +44,7 @@ const Dashboard = ({ userId }) => {
     onSuccess: (newTask) => {
       queryClient.setQueryData(['dashboardData', userId], (oldData) => ({
         ...oldData,
-        tasks: [...oldData.tasks, newTask],
+        tasks: [...(oldData?.tasks || []), newTask],
       }));
     },
   });
@@ -60,7 +58,7 @@ const Dashboard = ({ userId }) => {
     onSuccess: (updatedTask) => {
       queryClient.setQueryData(['dashboardData', userId], (oldData) => ({
         ...oldData,
-        tasks: oldData.tasks.map(t => t.id === updatedTask.id ? updatedTask : t),
+        tasks: oldData?.tasks?.map(t => t.id === updatedTask.id ? updatedTask : t) || [],
       }));
       setEditingTask(null);
     },
@@ -82,14 +80,11 @@ const Dashboard = ({ userId }) => {
   };
 
   if (isLoading) return <div>Loading dashboard...</div>;
-  if (error) return <div>Error loading dashboard: {error.message}</div>;
+  if (isError) return <div>Error loading dashboard: {error.message}</div>;
 
   return (
     <div className="p-6 bg-gray-900 text-white">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <NotificationSystem userId={userId} />
-      </div>
+      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Tasks</h2>
@@ -110,7 +105,7 @@ const Dashboard = ({ userId }) => {
           <Button type="submit">Add Task</Button>
         </form>
         <Accordion type="single" collapsible className="w-full">
-          {data.tasks.map((task) => (
+          {data?.tasks?.map((task) => (
             <AccordionItem value={`task-${task.id}`} key={task.id}>
               <AccordionTrigger>{task.name}</AccordionTrigger>
               <AccordionContent>
@@ -154,7 +149,7 @@ const Dashboard = ({ userId }) => {
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
         <Accordion type="single" collapsible className="w-full">
-          {data.events.map((event) => (
+          {data?.events?.map((event) => (
             <AccordionItem value={`event-${event.id}`} key={event.id}>
               <AccordionTrigger>{event.name}</AccordionTrigger>
               <AccordionContent>
@@ -170,7 +165,7 @@ const Dashboard = ({ userId }) => {
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Community Activities</h2>
         <Accordion type="single" collapsible className="w-full">
-          {data.communityActivity.map((activity) => (
+          {data?.communityActivity?.map((activity) => (
             <AccordionItem value={`activity-${activity.id}`} key={activity.id}>
               <AccordionTrigger>{activity.content}</AccordionTrigger>
               <AccordionContent>
@@ -180,10 +175,6 @@ const Dashboard = ({ userId }) => {
             </AccordionItem>
           ))}
         </Accordion>
-      </div>
-
-      <div className="mt-6">
-        <MatchingAlgorithm userId={userId} />
       </div>
     </div>
   );
