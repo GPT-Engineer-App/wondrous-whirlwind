@@ -3,184 +3,178 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Avatar } from './ui/avatar';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Badge } from './ui/badge';
-import { Plus, Clock, Zap, Award, Users } from 'lucide-react';
 
 const fetchDashboardData = async (userId) => {
   // Simulated API call
   await new Promise(resolve => setTimeout(resolve, 1000));
   return {
-    currentBook: {
-      title: "War and Peace",
-      progress: 543,
-      totalPages: 1225,
-      friends: [
-        { id: 1, avatar: "https://i.pravatar.cc/150?img=1" },
-        { id: 2, avatar: "https://i.pravatar.cc/150?img=2" },
-        { id: 3, avatar: "https://i.pravatar.cc/150?img=3" },
-        { id: 4, avatar: "https://i.pravatar.cc/150?img=4" },
-        { id: 5, avatar: "https://i.pravatar.cc/150?img=5" },
-      ]
-    },
-    readingTime: {
-      hours: 6,
-      minutes: 24,
-      percentage: 23
-    },
-    streak: 7,
-    level: {
-      current: 2,
-      pointsToNextLevel: 143
-    },
-    badges: [
-      { id: 1, icon: "🏆" },
-      { id: 2, icon: "📚" },
-      { id: 3, icon: "🌟" }
+    tasks: [
+      { id: 1, name: 'Complete project proposal', status: 'in-progress', image: 'https://source.unsplash.com/random/300x200?work', description: 'Finish the project proposal for the new client', tags: ['urgent', 'client', 'proposal', 'deadline', 'project'], community: 'Project Managers', friends: ['Alice', 'Bob'] },
+      { id: 2, name: 'Review code changes', status: 'pending', image: 'https://source.unsplash.com/random/300x200?code', description: 'Review and approve the latest code changes', tags: ['code', 'review', 'collaboration', 'quality', 'teamwork'], community: 'Developers', friends: ['Charlie', 'Diana'] },
     ],
-    leaderboard: [
-      { id: 1, name: "Amy Winaar", points: 88242 },
-      { id: 2, name: "CarsonP", points: 88230 },
-      { id: 3, name: "Shawninthebest", points: 88205 }
+    events: [
+      { id: 1, name: 'Team meeting', date: '2023-06-15', description: 'Weekly team sync-up', location: 'Conference Room A' },
+      { id: 2, name: 'React Conference', date: '2023-07-01', description: 'Annual React developers conference', location: 'Convention Center' },
     ],
-    activities: [
-      { id: 1, user: "Charlotte Parker", avatar: "https://i.pravatar.cc/150?img=6", message: "Anyone else really really love chapter 12?", time: "4h" },
-      { id: 2, user: "Tonya Gray", avatar: "https://i.pravatar.cc/150?img=7", message: "I'm not there yet, wait for meeeee!", time: "4h" },
-      { id: 3, user: "Amy Winaar", avatar: "https://i.pravatar.cc/150?img=8", message: "When they revealed who it was for 30min? The twist was so beautiful", time: "2h" },
-      { id: 4, user: "Brittany Sullivan", avatar: "https://i.pravatar.cc/150?img=9", message: "Wait until you get to 14..... 😱", time: "3h" }
-    ]
+    communityActivity: [
+      { id: 1, type: 'post', content: 'New discussion: Best practices for React hooks', community: 'React Developers' },
+      { id: 2, type: 'comment', content: 'Your post received a new comment', community: 'UI/UX Designers' },
+    ],
   };
 };
 
 const Dashboard = ({ userId }) => {
   const queryClient = useQueryClient();
   const [newTask, setNewTask] = useState({ name: '', description: '' });
+  const [editingTask, setEditingTask] = useState(null);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['dashboardData', userId],
     queryFn: () => fetchDashboardData(userId),
   });
 
+  const addTaskMutation = useMutation({
+    mutationFn: async (task) => {
+      // Simulated API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return { ...task, id: Date.now(), status: 'pending' };
+    },
+    onSuccess: (newTask) => {
+      queryClient.setQueryData(['dashboardData', userId], (oldData) => ({
+        ...oldData,
+        tasks: [...(oldData?.tasks || []), newTask],
+      }));
+    },
+  });
+
+  const editTaskMutation = useMutation({
+    mutationFn: async (task) => {
+      // Simulated API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return task;
+    },
+    onSuccess: (updatedTask) => {
+      queryClient.setQueryData(['dashboardData', userId], (oldData) => ({
+        ...oldData,
+        tasks: oldData?.tasks?.map(t => t.id === updatedTask.id ? updatedTask : t) || [],
+      }));
+      setEditingTask(null);
+    },
+  });
+
+  const handleAddTask = (e) => {
+    e.preventDefault();
+    addTaskMutation.mutate(newTask);
+    setNewTask({ name: '', description: '' });
+  };
+
+  const handleEditTask = (task) => {
+    setEditingTask(task);
+  };
+
+  const handleSaveEdit = (e) => {
+    e.preventDefault();
+    editTaskMutation.mutate(editingTask);
+  };
+
   if (isLoading) return <div>Loading dashboard...</div>;
   if (isError) return <div>Error loading dashboard: {error.message}</div>;
 
   return (
     <div className="p-6 bg-gray-900 text-white">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <Card className="bg-gray-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {data.currentBook.title}
-            </CardTitle>
-            <Plus className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.currentBook.progress} <span className="text-xs font-normal">out of {data.currentBook.totalPages} pages</span></div>
-            <p className="text-xs text-muted-foreground">
-              {Math.round((data.currentBook.progress / data.currentBook.totalPages) * 100)}% among friends
-            </p>
-            <div className="flex mt-4 space-x-1">
-              {data.currentBook.friends.map(friend => (
-                <Avatar key={friend.id} className="w-6 h-6">
-                  <img src={friend.avatar} alt="Friend avatar" />
-                </Avatar>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="bg-yellow-500/20">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Time</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{data.readingTime.hours}:{data.readingTime.minutes.toString().padStart(2, '0')}</div>
-              <p className="text-xs text-muted-foreground">
-                {data.readingTime.percentage}% increase from last week
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-green-500/20">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Streak</CardTitle>
-              <Zap className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{data.streak}</div>
-              <p className="text-xs text-muted-foreground">
-                Day streak, keep it up!
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-purple-500/20">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Level</CardTitle>
-              <Award className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{data.level.current}</div>
-              <p className="text-xs text-muted-foreground">
-                {data.level.pointsToNextLevel} reader points to next level
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-blue-500/20">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Badges</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="flex space-x-2">
-                {data.badges.map(badge => (
-                  <Badge key={badge.id} variant="secondary">{badge.icon}</Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Tasks</h2>
+        <form onSubmit={handleAddTask} className="mb-4">
+          <Input
+            type="text"
+            placeholder="New task name"
+            value={newTask.name}
+            onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
+            className="mb-2"
+          />
+          <Textarea
+            placeholder="Task description"
+            value={newTask.description}
+            onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+            className="mb-2"
+          />
+          <Button type="submit">Add Task</Button>
+        </form>
+        <Accordion type="single" collapsible className="w-full">
+          {data?.tasks?.map((task) => (
+            <AccordionItem value={`task-${task.id}`} key={task.id}>
+              <AccordionTrigger>{task.name}</AccordionTrigger>
+              <AccordionContent>
+                {editingTask && editingTask.id === task.id ? (
+                  <form onSubmit={handleSaveEdit}>
+                    <Input
+                      type="text"
+                      value={editingTask.name}
+                      onChange={(e) => setEditingTask({ ...editingTask, name: e.target.value })}
+                      className="mb-2"
+                    />
+                    <Textarea
+                      value={editingTask.description}
+                      onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
+                      className="mb-2"
+                    />
+                    <Button type="submit">Save</Button>
+                    <Button type="button" onClick={() => setEditingTask(null)}>Cancel</Button>
+                  </form>
+                ) : (
+                  <div className="space-y-2">
+                    <img src={task.image} alt={task.name} className="w-full h-32 object-cover rounded-md" />
+                    <p>{task.description}</p>
+                    <p><strong>Status:</strong> {task.status}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {task.tags.map((tag, index) => (
+                        <Badge key={index} variant="secondary">{tag}</Badge>
+                      ))}
+                    </div>
+                    <p><strong>Community:</strong> {task.community}</p>
+                    <p><strong>Friends:</strong> {task.friends.join(", ")}</p>
+                    <Button onClick={() => handleEditTask(task)}>Edit</Button>
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
 
-        <Card className="bg-gray-800">
-          <CardHeader>
-            <CardTitle>Leaderboard</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {data.leaderboard.map((user, index) => (
-              <div key={user.id} className="flex items-center justify-between py-2">
-                <div className="flex items-center">
-                  <span className="font-bold mr-2">#{index + 1}</span>
-                  <Avatar className="w-8 h-8 mr-2">
-                    <img src={`https://i.pravatar.cc/150?img=${10 + index}`} alt={user.name} />
-                  </Avatar>
-                  <span>{user.name}</span>
-                </div>
-                <span>{user.points.toLocaleString()} points</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
+        <Accordion type="single" collapsible className="w-full">
+          {data?.events?.map((event) => (
+            <AccordionItem value={`event-${event.id}`} key={event.id}>
+              <AccordionTrigger>{event.name}</AccordionTrigger>
+              <AccordionContent>
+                <p><strong>Date:</strong> {event.date}</p>
+                <p>{event.description}</p>
+                <p><strong>Location:</strong> {event.location}</p>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
 
-        <Card className="bg-gray-800">
-          <CardHeader>
-            <CardTitle>All activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {data.activities.map(activity => (
-              <div key={activity.id} className="flex items-start space-x-4 py-2">
-                <Avatar className="w-10 h-10">
-                  <img src={activity.avatar} alt={activity.user} />
-                </Avatar>
-                <div className="flex-1">
-                  <p className="font-semibold">{activity.user}</p>
-                  <p className="text-sm text-gray-400">{activity.message}</p>
-                </div>
-                <span className="text-xs text-gray-500">{activity.time}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Community Activities</h2>
+        <Accordion type="single" collapsible className="w-full">
+          {data?.communityActivity?.map((activity) => (
+            <AccordionItem value={`activity-${activity.id}`} key={activity.id}>
+              <AccordionTrigger>{activity.content}</AccordionTrigger>
+              <AccordionContent>
+                <p><strong>Type:</strong> {activity.type}</p>
+                <p><strong>Community:</strong> {activity.community}</p>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </div>
   );
