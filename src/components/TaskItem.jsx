@@ -1,18 +1,15 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Icons } from "@/components/ui/icons";
 
 const TaskItem = ({ task }) => {
-  // Placeholder function for icons
-  const getIcon = (iconName) => {
-    // This function now returns a simple placeholder
-    return <span className="w-6 h-6 inline-block bg-gray-300 rounded-full mr-2"></span>;
-  };
+  const IconComponent = Icons[task.icon] || Icons.default;
 
   return (
     <Card className="w-full mb-4">
       <CardHeader className="flex flex-row items-center space-x-4">
-        {getIcon(task.icon)}
+        <IconComponent className="h-6 w-6" />
         <div>
           <CardTitle>{task.name}</CardTitle>
           <CardDescription>{task.description}</CardDescription>
