@@ -7,20 +7,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, MessageCircle } from 'lucide-react';
+import { Heart, X, MessageCircle, Calendar } from 'lucide-react';
+import ScheduleDisplay from '../components/ScheduleDisplay';
 
 const fetchMatches = async () => {
   // Simulated API call
   await new Promise(resolve => setTimeout(resolve, 1000));
   return [
-    { id: 1, name: "Alice", age: 28, location: "New York", interests: ["React", "Hiking", "Photography"], preferences1: "Technology", preferences2: "Outdoors" },
-    { id: 2, name: "Bob", age: 32, location: "San Francisco", interests: ["JavaScript", "Cooking", "Travel"], preferences1: "Food", preferences2: "Adventure" },
-    { id: 3, name: "Charlie", age: 25, location: "London", interests: ["Python", "Music", "Fitness"], preferences1: "Technology", preferences2: "Health" },
-    { id: 4, name: "Diana", age: 30, location: "Berlin", interests: ["Design", "Yoga", "Reading"], preferences1: "Creativity", preferences2: "Wellness" },
+    { id: 1, name: "Alice", age: 28, location: "New York", interests: ["React", "Hiking", "Photography"], preferences1: "Technology", preferences2: "Outdoors", schedule: ["2023-06-15", "2023-06-16", "2023-06-18"] },
+    { id: 2, name: "Bob", age: 32, location: "San Francisco", interests: ["JavaScript", "Cooking", "Travel"], preferences1: "Food", preferences2: "Adventure", schedule: ["2023-06-14", "2023-06-17", "2023-06-19"] },
+    { id: 3, name: "Charlie", age: 25, location: "London", interests: ["Python", "Music", "Fitness"], preferences1: "Technology", preferences2: "Health", schedule: ["2023-06-15", "2023-06-17", "2023-06-20"] },
+    { id: 4, name: "Diana", age: 30, location: "Berlin", interests: ["Design", "Yoga", "Reading"], preferences1: "Creativity", preferences2: "Wellness", schedule: ["2023-06-16", "2023-06-18", "2023-06-21"] },
   ];
 };
 
-const MatchCard = ({ match, onLike, onPass, onMessage }) => (
+const MatchCard = ({ match, onLike, onPass, onMessage, onSchedule }) => (
   <Card className="w-full max-w-sm mx-auto">
     <CardHeader>
       <CardTitle className="flex items-center justify-between">
@@ -34,12 +35,16 @@ const MatchCard = ({ match, onLike, onPass, onMessage }) => (
         <p><strong>Interests:</strong> {match.interests.join(", ")}</p>
         <p><strong>Preferences:</strong> {match.preferences1}, {match.preferences2}</p>
       </div>
+      <ScheduleDisplay schedule={match.schedule} />
       <div className="flex justify-between mt-4">
         <Button variant="outline" size="icon" onClick={() => onPass(match.id)}>
           <X className="h-4 w-4" />
         </Button>
         <Button variant="outline" size="icon" onClick={() => onMessage(match.id)}>
           <MessageCircle className="h-4 w-4" />
+        </Button>
+        <Button variant="outline" size="icon" onClick={() => onSchedule(match.id)}>
+          <Calendar className="h-4 w-4" />
         </Button>
         <Button variant="outline" size="icon" onClick={() => onLike(match.id)}>
           <Heart className="h-4 w-4" />
@@ -53,6 +58,7 @@ const Matching = () => {
   const [ageRange, setAgeRange] = useState([20, 40]);
   const [location, setLocation] = useState("");
   const [interest, setInterest] = useState("");
+  const [availableToday, setAvailableToday] = useState(false);
 
   const { data: matches, isLoading, error } = useQuery({
     queryKey: ['matches'],
@@ -74,14 +80,17 @@ const Matching = () => {
     // Implement messaging functionality
   };
 
+  const handleSchedule = (id) => {
+    console.log(`Viewing schedule for user with id: ${id}`);
+    // Implement schedule viewing functionality
+  };
+
   const filteredMatches = matches?.filter(match => 
     match.age >= ageRange[0] && match.age <= ageRange[1] &&
     (location === "" || match.location.toLowerCase().includes(location.toLowerCase())) &&
-    (interest === "" || match.interests.some(i => i.toLowerCase().includes(interest.toLowerCase())))
+    (interest === "" || match.interests.some(i => i.toLowerCase().includes(interest.toLowerCase()))) &&
+    (!availableToday || match.schedule.includes(new Date().toISOString().split('T')[0]))
   );
-
-  if (isLoading) return <div className="text-center mt-8">Loading matches...</div>;
-  if (error) return <div className="text-center mt-8 text-red-500">Error loading matches: {error.message}</div>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
@@ -119,6 +128,17 @@ const Matching = () => {
           onChange={(e) => setInterest(e.target.value)}
           className="max-w-sm"
         />
+
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="availableToday"
+            checked={availableToday}
+            onChange={(e) => setAvailableToday(e.target.checked)}
+            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          />
+          <label htmlFor="availableToday" className="text-sm font-medium">Available Today</label>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -129,10 +149,13 @@ const Matching = () => {
             onLike={handleLike}
             onPass={handlePass}
             onMessage={handleMessage}
+            onSchedule={handleSchedule}
           />
         ))}
       </div>
       
+      {isLoading && <p className="text-center mt-8">Loading matches...</p>}
+      {error && <p className="text-center mt-8 text-red-500">Error loading matches: {error.message}</p>}
       {filteredMatches?.length === 0 && (
         <p className="text-center mt-8">No matches found. Try adjusting your filters.</p>
       )}
