@@ -7,7 +7,7 @@ const ScheduleEditor = ({ initialSchedule, onSave }) => {
   const [selectedDates, setSelectedDates] = useState(initialSchedule || []);
 
   const handleDateSelect = (date) => {
-    const dateString = date.toISOString().split('T')[0];
+    const dateString = date instanceof Date ? date.toISOString().split('T')[0] : date;
     if (selectedDates.includes(dateString)) {
       setSelectedDates(selectedDates.filter(d => d !== dateString));
     } else {
