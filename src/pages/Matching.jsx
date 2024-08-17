@@ -89,7 +89,7 @@ const Matching = () => {
     match.age >= ageRange[0] && match.age <= ageRange[1] &&
     (location === "" || match.location.toLowerCase().includes(location.toLowerCase())) &&
     (interest === "" || match.interests.some(i => i.toLowerCase().includes(interest.toLowerCase()))) &&
-    (!availableToday || match.schedule.includes(new Date().toISOString().split('T')[0]))
+    (!availableToday || (Array.isArray(match.schedule) && match.schedule.includes(new Date().toISOString().split('T')[0])))
   );
 
   return (
