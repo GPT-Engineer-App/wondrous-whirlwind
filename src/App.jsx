@@ -9,6 +9,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Onboarding from './pages/Onboarding';
 import Auth from './pages/Auth';
 import { isAuthenticated } from './utils/auth';
+import { ThemeProvider } from './components/ThemeProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,30 +30,32 @@ const PrivateRoute = ({ children }) => {
 const App = () => (
   <React.StrictMode>
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Router>
-            <div className="pb-16 md:pb-0">
-              <Routes>
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/auth" element={<Auth />} />
-                {navItems.map(({ to, page }) => (
-                  <Route
-                    key={to}
-                    path={to}
-                    element={
-                      <PrivateRoute>{page}</PrivateRoute>
-                    }
-                  />
-                ))}
-                <Route path="*" element={<Navigate to="/onboarding" replace />} />
-              </Routes>
-              {isAuthenticated() && <MobileMenu />}
-            </div>
-          </Router>
-        </TooltipProvider>
-      </QueryClientProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Router>
+              <div className="pb-16 md:pb-0">
+                <Routes>
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/auth" element={<Auth />} />
+                  {navItems.map(({ to, page }) => (
+                    <Route
+                      key={to}
+                      path={to}
+                      element={
+                        <PrivateRoute>{page}</PrivateRoute>
+                      }
+                    />
+                  ))}
+                  <Route path="*" element={<Navigate to="/onboarding" replace />} />
+                </Routes>
+                {isAuthenticated() && <MobileMenu />}
+              </div>
+            </Router>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   </React.StrictMode>
 );

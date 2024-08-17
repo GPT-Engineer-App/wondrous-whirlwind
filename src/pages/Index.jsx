@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, ThumbsUp, MessageSquare, Share2, Trophy } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
+import { useTheme } from '../components/ThemeProvider';
 
 const fetchDashboardData = async () => {
   // Simulated API call
@@ -35,105 +37,109 @@ const Index = () => {
     queryKey: ['dashboardData'],
     queryFn: fetchDashboardData,
   });
+  const { theme } = useTheme();
 
   if (isLoading) return <div className="p-4">Loading dashboard...</div>;
   if (isError) return <div className="p-4">Error loading dashboard</div>;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4 space-y-6 pb-16 md:pb-0">
-      <h1 className="text-3xl font-bold mb-6">Home Dashboard</h1>
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} p-4 space-y-6 pb-16 md:pb-0`}>
+      <ThemeToggle />
+      <h1 className={`text-3xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Home Dashboard</h1>
 
-      <Card className="bg-gray-800">
-        <CardHeader>
-          <CardTitle className="text-xl">Upcoming Events</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {data.events.map((event) => (
-            <div key={event.id} className="flex justify-between items-center">
-              <div>
-                <h3 className="font-semibold">{event.name}</h3>
-                <p className="text-sm text-gray-400">{event.description}</p>
-              </div>
-              <Badge variant="secondary">
-                <CalendarIcon className="mr-1 h-3 w-3" />
-                {event.date}
-              </Badge>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card className="bg-gray-800">
-        <CardHeader>
-          <CardTitle className="text-xl">Community Activity</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {data.communityActivity.map((activity) => (
-            <div key={activity.id} className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold">{activity.user}</span>
-                <Badge>{activity.community}</Badge>
-              </div>
-              <p className="text-sm">{activity.content}</p>
-              <div className="flex justify-between text-sm text-gray-400">
-                <span className="flex items-center">
-                  <ThumbsUp className="h-4 w-4 mr-1" /> {activity.likes}
-                </span>
-                <span className="flex items-center">
-                  <MessageSquare className="h-4 w-4 mr-1" /> {activity.comments}
-                </span>
-                <Button variant="ghost" size="sm">
-                  <Share2 className="h-4 w-4 mr-1" /> Share
-                </Button>
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card className="bg-gray-800">
-        <CardHeader>
-          <CardTitle className="text-xl">Active Challenges</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {data.challenges.map((challenge) => (
-            <div key={challenge.id} className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold">{challenge.name}</h3>
-                <p className="text-sm text-gray-400">{challenge.participants} participants</p>
-              </div>
-              <div className="text-right">
-                <Badge variant="secondary" className="mb-1">
-                  <Trophy className="mr-1 h-3 w-3" />
-                  {challenge.daysLeft} days left
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}>
+          <CardHeader>
+            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Upcoming Events</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {data.events.slice(0, 2).map((event) => (
+              <div key={event.id} className="flex justify-between items-center">
+                <div>
+                  <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{event.name}</h3>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{event.description}</p>
+                </div>
+                <Badge variant="secondary">
+                  <CalendarIcon className="mr-1 h-3 w-3" />
+                  {event.date}
                 </Badge>
-                <Button size="sm">Join</Button>
               </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            ))}
+          </CardContent>
+        </Card>
 
-      <Card className="bg-gray-800">
-        <CardHeader>
-          <CardTitle className="text-xl">Recent Activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {data.recentActivity.map((activity) => (
-            <div key={activity.id} className="flex items-center space-x-4 mb-4">
-              <Avatar>
-                <AvatarImage src={`https://source.unsplash.com/random/100x100?face=${activity.id}`} />
-                <AvatarFallback>{activity.user[0]}</AvatarFallback>
-              </Avatar>
-              <div className="flex-grow">
-                <p className="font-semibold">{activity.user}</p>
-                <p className="text-sm text-gray-400">{activity.content}</p>
+        <Card className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}>
+          <CardHeader>
+            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Community Activity</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {data.communityActivity.slice(0, 1).map((activity) => (
+              <div key={activity.id} className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{activity.user}</span>
+                  <Badge>{activity.community}</Badge>
+                </div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{activity.content}</p>
+                <div className="flex justify-between text-sm text-gray-400">
+                  <span className="flex items-center">
+                    <ThumbsUp className="h-4 w-4 mr-1" /> {activity.likes}
+                  </span>
+                  <span className="flex items-center">
+                    <MessageSquare className="h-4 w-4 mr-1" /> {activity.comments}
+                  </span>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="h-4 w-4 mr-1" /> Share
+                  </Button>
+                </div>
               </div>
-              <span className="text-sm text-gray-400">{activity.time}</span>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}>
+          <CardHeader>
+            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Active Challenges</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {data.challenges.slice(0, 2).map((challenge) => (
+              <div key={challenge.id} className="flex items-center justify-between">
+                <div>
+                  <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{challenge.name}</h3>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{challenge.participants} participants</p>
+                </div>
+                <div className="text-right">
+                  <Badge variant="secondary" className="mb-1">
+                    <Trophy className="mr-1 h-3 w-3" />
+                    {challenge.daysLeft} days left
+                  </Badge>
+                  <Button size="sm">Join</Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}>
+          <CardHeader>
+            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {data.recentActivity.slice(0, 2).map((activity) => (
+              <div key={activity.id} className="flex items-center space-x-4 mb-4">
+                <Avatar>
+                  <AvatarImage src={`https://source.unsplash.com/random/100x100?face=${activity.id}`} />
+                  <AvatarFallback>{activity.user[0]}</AvatarFallback>
+                </Avatar>
+                <div className="flex-grow">
+                  <p className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{activity.user}</p>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{activity.content}</p>
+                </div>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{activity.time}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
