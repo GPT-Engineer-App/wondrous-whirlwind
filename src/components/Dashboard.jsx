@@ -6,24 +6,33 @@ import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
+import { Calendar } from './ui/calendar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { CheckCircle, Clock, AlertTriangle, Calendar as CalendarIcon, Plus, ThumbsUp, MessageSquare, Share2 } from 'lucide-react';
 
 const fetchDashboardData = async (userId) => {
   // Simulated API call
   await new Promise(resolve => setTimeout(resolve, 1000));
   return {
     tasks: [
-      { id: 1, name: 'Complete project proposal', status: 'in-progress', description: 'Finish the project proposal for the new client', tags: ['urgent', 'client', 'proposal'], community: 'Project Managers', friends: ['Alice', 'Bob'] },
-      { id: 2, name: 'Review code changes', status: 'pending', description: 'Review and approve the latest code changes', tags: ['code', 'review', 'collaboration'], community: 'Developers', friends: ['Charlie', 'Diana'] },
+      { id: 1, name: 'Complete project proposal', status: 'pending', description: 'Finish the project proposal for the new client', tags: ['urgent', 'client', 'proposal'], community: 'Project Managers', friends: ['Alice', 'Bob'] },
+      { id: 2, name: 'Review code changes', status: 'completed', description: 'Review and approve the latest code changes', tags: ['code', 'review', 'collaboration'], community: 'Developers', friends: ['Charlie', 'Diana'] },
+      { id: 3, name: 'Prepare presentation', status: 'overdue', description: 'Prepare slides for the upcoming conference', tags: ['presentation', 'conference'], community: 'Public Speakers', friends: ['Eve', 'Frank'] },
     ],
     events: [
       { id: 1, name: 'Team meeting', date: '2023-06-15', description: 'Weekly team sync-up', location: 'Conference Room A' },
       { id: 2, name: 'React Conference', date: '2023-07-01', description: 'Annual React developers conference', location: 'Convention Center' },
+      { id: 3, name: 'Project Deadline', date: '2023-06-30', description: 'Final submission for the client project', location: 'Online' },
     ],
     communityActivity: [
-      { id: 1, type: 'post', content: 'New discussion: Best practices for React hooks', community: 'React Developers' },
-      { id: 2, type: 'comment', content: 'Your post received a new comment', community: 'UI/UX Designers' },
+      { id: 1, type: 'post', content: 'New discussion: Best practices for React hooks', community: 'React Developers', user: 'John Doe', likes: 15, comments: 7 },
+      { id: 2, type: 'challenge', content: '30-day coding challenge: Build a full-stack app', community: 'Full Stack Developers', user: 'Jane Smith', likes: 32, comments: 12 },
+      { id: 3, type: 'discussion', content: 'How to optimize database queries for large datasets?', community: 'Database Experts', user: 'Mike Johnson', likes: 8, comments: 5 },
     ],
     stats: {
+      tasksCompleted: 25,
+      tasksPending: 10,
+      tasksOverdue: 3,
       progress: 543,
       totalPages: 1235,
       timeSpent: '6:24',
@@ -103,50 +112,45 @@ const Dashboard = ({ userId }) => {
 
   return (
     <div className="p-4 bg-gray-900 text-white">
-      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6">Home Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <Card className="bg-yellow-500 text-black">
+        <Card className="bg-blue-600">
+          <CardHeader>
+            <CardTitle>Tasks Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <CheckCircle className="mr-2" />
+                <span>Completed: {data.stats.tasksCompleted}</span>
+              </div>
+              <div className="flex items-center">
+                <Clock className="mr-2" />
+                <span>Pending: {data.stats.tasksPending}</span>
+              </div>
+              <div className="flex items-center">
+                <AlertTriangle className="mr-2" />
+                <span>Overdue: {data.stats.tasksOverdue}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-green-600">
           <CardHeader>
             <CardTitle>Progress</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold">{data.stats.progress}</p>
             <p>Out of {data.stats.totalPages} pages</p>
+            <div className="w-full bg-green-300 rounded-full h-2.5 mt-2">
+              <div className="bg-green-800 h-2.5 rounded-full" style={{ width: `${(data.stats.progress / data.stats.totalPages) * 100}%` }}></div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-blue-500">
-          <CardHeader>
-            <CardTitle>Time</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">{data.stats.timeSpent}</p>
-            <p>Total time spent reading</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-green-500">
-          <CardHeader>
-            <CardTitle>Streak</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">{data.stats.streak}</p>
-            <p>Day streak</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-purple-500">
-          <CardHeader>
-            <CardTitle>Level</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">{data.stats.level}</p>
-            <p>Current level</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-pink-500">
+        <Card className="bg-purple-600">
           <CardHeader>
             <CardTitle>Badges</CardTitle>
           </CardHeader>
@@ -158,17 +162,132 @@ const Dashboard = ({ userId }) => {
         </Card>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Upcoming Events</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Calendar
+              mode="single"
+              selected={new Date()}
+              className="rounded-md border mb-4"
+            />
+            {data.events.slice(0, 3).map((event) => (
+              <div key={event.id} className="mb-2 p-2 bg-gray-800 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold">{event.name}</h3>
+                  <span className="text-sm">{event.date}</span>
+                </div>
+                <p className="text-sm text-gray-400">{event.description}</p>
+              </div>
+            ))}
+            <Button className="w-full mt-2">
+              <CalendarIcon className="mr-2 h-4 w-4" /> View All Events
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Community Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {data.communityActivity.map((activity) => (
+              <div key={activity.id} className="mb-4 p-3 bg-gray-800 rounded-lg">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-semibold">{activity.user}</span>
+                  <Badge>{activity.community}</Badge>
+                </div>
+                <p className="text-sm mb-2">{activity.content}</p>
+                <div className="flex justify-between text-sm text-gray-400">
+                  <span className="flex items-center">
+                    <ThumbsUp className="h-4 w-4 mr-1" /> {activity.likes}
+                  </span>
+                  <span className="flex items-center">
+                    <MessageSquare className="h-4 w-4 mr-1" /> {activity.comments}
+                  </span>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="h-4 w-4 mr-1" /> Share
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Leaderboard</CardTitle>
+          <CardTitle>Tasks</CardTitle>
         </CardHeader>
         <CardContent>
-          {data.leaderboard.map((user, index) => (
-            <div key={user.id} className="flex items-center justify-between mb-2">
-              <span>{index + 1}. {user.name}</span>
-              <span>{user.points} points</span>
-            </div>
-          ))}
+          <Tabs defaultValue="pending">
+            <TabsList className="mb-4">
+              <TabsTrigger value="pending">Pending</TabsTrigger>
+              <TabsTrigger value="completed">Completed</TabsTrigger>
+              <TabsTrigger value="overdue">Overdue</TabsTrigger>
+            </TabsList>
+            <TabsContent value="pending">
+              {data.tasks.filter(task => task.status === 'pending').map((task) => (
+                <div key={task.id} className="mb-4 p-4 bg-gray-800 rounded-lg">
+                  <h3 className="text-xl font-bold mb-2">{task.name}</h3>
+                  <p className="mb-2">{task.description}</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {task.tags.map((tag, index) => (
+                      <Badge key={index} variant="secondary">{tag}</Badge>
+                    ))}
+                  </div>
+                  <Button onClick={() => handleEditTask(task)} className="mt-2">Edit</Button>
+                </div>
+              ))}
+            </TabsContent>
+            <TabsContent value="completed">
+              {data.tasks.filter(task => task.status === 'completed').map((task) => (
+                <div key={task.id} className="mb-4 p-4 bg-gray-800 rounded-lg">
+                  <h3 className="text-xl font-bold mb-2">{task.name}</h3>
+                  <p className="mb-2">{task.description}</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {task.tags.map((tag, index) => (
+                      <Badge key={index} variant="secondary">{tag}</Badge>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </TabsContent>
+            <TabsContent value="overdue">
+              {data.tasks.filter(task => task.status === 'overdue').map((task) => (
+                <div key={task.id} className="mb-4 p-4 bg-gray-800 rounded-lg">
+                  <h3 className="text-xl font-bold mb-2">{task.name}</h3>
+                  <p className="mb-2">{task.description}</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {task.tags.map((tag, index) => (
+                      <Badge key={index} variant="secondary">{tag}</Badge>
+                    ))}
+                  </div>
+                  <Button onClick={() => handleEditTask(task)} className="mt-2">Edit</Button>
+                </div>
+              ))}
+            </TabsContent>
+          </Tabs>
+          <form onSubmit={handleAddTask} className="mt-4">
+            <Input
+              type="text"
+              placeholder="New task name"
+              value={newTask.name}
+              onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
+              className="mb-2"
+            />
+            <Textarea
+              placeholder="Task description"
+              value={newTask.description}
+              onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+              className="mb-2"
+            />
+            <Button type="submit">
+              <Plus className="mr-2 h-4 w-4" /> Add Task
+            </Button>
+          </form>
         </CardContent>
       </Card>
 
@@ -188,96 +307,6 @@ const Dashboard = ({ userId }) => {
                 <span className="ml-auto text-sm text-gray-400">{activity.time}</span>
               </div>
               <p>{activity.content}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Tasks</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleAddTask} className="mb-4">
-            <Input
-              type="text"
-              placeholder="New task name"
-              value={newTask.name}
-              onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
-              className="mb-2"
-            />
-            <Textarea
-              placeholder="Task description"
-              value={newTask.description}
-              onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-              className="mb-2"
-            />
-            <Button type="submit">Add Task</Button>
-          </form>
-          {data.tasks.map((task) => (
-            <div key={task.id} className="mb-4 p-4 bg-gray-800 rounded-lg">
-              {editingTask && editingTask.id === task.id ? (
-                <form onSubmit={handleSaveEdit}>
-                  <Input
-                    type="text"
-                    value={editingTask.name}
-                    onChange={(e) => setEditingTask({ ...editingTask, name: e.target.value })}
-                    className="mb-2"
-                  />
-                  <Textarea
-                    value={editingTask.description}
-                    onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
-                    className="mb-2"
-                  />
-                  <Button type="submit">Save</Button>
-                  <Button type="button" onClick={() => setEditingTask(null)}>Cancel</Button>
-                </form>
-              ) : (
-                <>
-                  <h3 className="text-xl font-bold mb-2">{task.name}</h3>
-                  <p className="mb-2">{task.description}</p>
-                  <p><strong>Status:</strong> {task.status}</p>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {task.tags.map((tag, index) => (
-                      <Badge key={index} variant="secondary">{tag}</Badge>
-                    ))}
-                  </div>
-                  <p><strong>Community:</strong> {task.community}</p>
-                  <p><strong>Friends:</strong> {task.friends.join(", ")}</p>
-                  <Button onClick={() => handleEditTask(task)} className="mt-2">Edit</Button>
-                </>
-              )}
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Upcoming Events</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {data.events.map((event) => (
-            <div key={event.id} className="mb-4 p-4 bg-gray-800 rounded-lg">
-              <h3 className="text-xl font-bold mb-2">{event.name}</h3>
-              <p><strong>Date:</strong> {event.date}</p>
-              <p>{event.description}</p>
-              <p><strong>Location:</strong> {event.location}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Community Activities</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {data.communityActivity.map((activity) => (
-            <div key={activity.id} className="mb-4 p-4 bg-gray-800 rounded-lg">
-              <p><strong>Type:</strong> {activity.type}</p>
-              <p>{activity.content}</p>
-              <p><strong>Community:</strong> {activity.community}</p>
             </div>
           ))}
         </CardContent>
