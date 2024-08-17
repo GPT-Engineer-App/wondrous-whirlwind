@@ -9,48 +9,55 @@ import { Badge } from './ui/badge';
 import { Calendar } from './ui/calendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { CheckCircle, Clock, AlertTriangle, Calendar as CalendarIcon, Plus, ThumbsUp, MessageSquare, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const fetchDashboardData = async (userId) => {
-  // Simulated API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return {
-    tasks: [
-      { id: 1, name: 'Complete project proposal', status: 'pending', description: 'Finish the project proposal for the new client', tags: ['urgent', 'client', 'proposal'], community: 'Project Managers', friends: ['Alice', 'Bob'] },
-      { id: 2, name: 'Review code changes', status: 'completed', description: 'Review and approve the latest code changes', tags: ['code', 'review', 'collaboration'], community: 'Developers', friends: ['Charlie', 'Diana'] },
-      { id: 3, name: 'Prepare presentation', status: 'overdue', description: 'Prepare slides for the upcoming conference', tags: ['presentation', 'conference'], community: 'Public Speakers', friends: ['Eve', 'Frank'] },
-    ],
-    events: [
-      { id: 1, name: 'Team meeting', date: '2023-06-15', description: 'Weekly team sync-up', location: 'Conference Room A' },
-      { id: 2, name: 'React Conference', date: '2023-07-01', description: 'Annual React developers conference', location: 'Convention Center' },
-      { id: 3, name: 'Project Deadline', date: '2023-06-30', description: 'Final submission for the client project', location: 'Online' },
-    ],
-    communityActivity: [
-      { id: 1, type: 'post', content: 'New discussion: Best practices for React hooks', community: 'React Developers', user: 'John Doe', likes: 15, comments: 7 },
-      { id: 2, type: 'challenge', content: '30-day coding challenge: Build a full-stack app', community: 'Full Stack Developers', user: 'Jane Smith', likes: 32, comments: 12 },
-      { id: 3, type: 'discussion', content: 'How to optimize database queries for large datasets?', community: 'Database Experts', user: 'Mike Johnson', likes: 8, comments: 5 },
-    ],
-    stats: {
-      tasksCompleted: 25,
-      tasksPending: 10,
-      tasksOverdue: 3,
-      progress: 543,
-      totalPages: 1235,
-      timeSpent: '6:24',
-      streak: 7,
-      level: 2,
-      badges: ['badge1', 'badge2', 'badge3'],
-    },
-    leaderboard: [
-      { id: 1, name: 'Amy Winnar', points: 88242 },
-      { id: 2, name: 'CarsonP', points: 88230 },
-      { id: 3, name: 'Shamansthebest', points: 88205 },
-    ],
-    recentActivity: [
-      { id: 1, user: 'Charlotte Parker', content: 'Anyone else really really love chapter 12?', time: '4h' },
-      { id: 2, user: 'Tonya Gray', content: "I'm not there yet, wait for meeeee!", time: '4h' },
-      { id: 3, user: 'Amy Winnar', content: 'When they revealed who Luna was at 30:00? The twist was so beautiful', time: '2h' },
-    ],
-  };
+  try {
+    // Simulated API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const data = {
+      tasks: [
+        { id: 1, name: 'Complete project proposal', status: 'pending', description: 'Finish the project proposal for the new client', tags: ['urgent', 'client', 'proposal'], community: 'Project Managers', friends: ['Alice', 'Bob'] },
+        { id: 2, name: 'Review code changes', status: 'completed', description: 'Review and approve the latest code changes', tags: ['code', 'review', 'collaboration'], community: 'Developers', friends: ['Charlie', 'Diana'] },
+        { id: 3, name: 'Prepare presentation', status: 'overdue', description: 'Prepare slides for the upcoming conference', tags: ['presentation', 'conference'], community: 'Public Speakers', friends: ['Eve', 'Frank'] },
+      ],
+      events: [
+        { id: 1, name: 'Team meeting', date: '2023-06-15', description: 'Weekly team sync-up', location: 'Conference Room A' },
+        { id: 2, name: 'React Conference', date: '2023-07-01', description: 'Annual React developers conference', location: 'Convention Center' },
+        { id: 3, name: 'Project Deadline', date: '2023-06-30', description: 'Final submission for the client project', location: 'Online' },
+      ],
+      communityActivity: [
+        { id: 1, type: 'post', content: 'New discussion: Best practices for React hooks', community: 'React Developers', user: 'John Doe', likes: 15, comments: 7 },
+        { id: 2, type: 'challenge', content: '30-day coding challenge: Build a full-stack app', community: 'Full Stack Developers', user: 'Jane Smith', likes: 32, comments: 12 },
+        { id: 3, type: 'discussion', content: 'How to optimize database queries for large datasets?', community: 'Database Experts', user: 'Mike Johnson', likes: 8, comments: 5 },
+      ],
+      stats: {
+        tasksCompleted: 25,
+        tasksPending: 10,
+        tasksOverdue: 3,
+        progress: 543,
+        totalPages: 1235,
+        timeSpent: '6:24',
+        streak: 7,
+        level: 2,
+        badges: ['badge1', 'badge2', 'badge3'],
+      },
+      leaderboard: [
+        { id: 1, name: 'Amy Winnar', points: 88242 },
+        { id: 2, name: 'CarsonP', points: 88230 },
+        { id: 3, name: 'Shamansthebest', points: 88205 },
+      ],
+      recentActivity: [
+        { id: 1, user: 'Charlotte Parker', content: 'Anyone else really really love chapter 12?', time: '4h' },
+        { id: 2, user: 'Tonya Gray', content: "I'm not there yet, wait for meeeee!", time: '4h' },
+        { id: 3, user: 'Amy Winnar', content: 'When they revealed who Luna was at 30:00? The twist was so beautiful', time: '2h' },
+      ],
+    };
+    return data;
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    throw new Error('Failed to fetch dashboard data');
+  }
 };
 
 const Dashboard = ({ userId }) => {
@@ -61,27 +68,46 @@ const Dashboard = ({ userId }) => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['dashboardData', userId],
     queryFn: () => fetchDashboardData(userId),
+    onError: (error) => {
+      console.error('Error fetching dashboard data:', error);
+      toast.error('Failed to load dashboard data. Please try again.');
+    },
   });
 
   const addTaskMutation = useMutation({
     mutationFn: async (task) => {
-      // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return { ...task, id: Date.now(), status: 'pending' };
+      try {
+        // Simulated API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return { ...task, id: Date.now(), status: 'pending' };
+      } catch (error) {
+        console.error('Error adding task:', error);
+        throw new Error('Failed to add task');
+      }
     },
     onSuccess: (newTask) => {
       queryClient.setQueryData(['dashboardData', userId], (oldData) => ({
         ...oldData,
         tasks: [...(oldData?.tasks || []), newTask],
       }));
+      toast.success('Task added successfully');
+    },
+    onError: (error) => {
+      console.error('Error adding task:', error);
+      toast.error('Failed to add task. Please try again.');
     },
   });
 
   const editTaskMutation = useMutation({
     mutationFn: async (task) => {
-      // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return task;
+      try {
+        // Simulated API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return task;
+      } catch (error) {
+        console.error('Error editing task:', error);
+        throw new Error('Failed to edit task');
+      }
     },
     onSuccess: (updatedTask) => {
       queryClient.setQueryData(['dashboardData', userId], (oldData) => ({
@@ -89,6 +115,11 @@ const Dashboard = ({ userId }) => {
         tasks: oldData?.tasks?.map(t => t.id === updatedTask.id ? updatedTask : t) || [],
       }));
       setEditingTask(null);
+      toast.success('Task updated successfully');
+    },
+    onError: (error) => {
+      console.error('Error editing task:', error);
+      toast.error('Failed to update task. Please try again.');
     },
   });
 
