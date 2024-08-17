@@ -19,20 +19,20 @@ const ProfileForm = ({ onSave, onCancel, initialData }) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="name">Full Name</Label>
-        <Input id="name" {...register("name", { required: "Name is required" })} />
+        <Input id="name" {...register("name", { required: "Name is required" })} className="bg-gray-700" />
         {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
       </div>
       
       <div className="space-y-2">
         <Label htmlFor="email">Email Address</Label>
-        <Input id="email" type="email" {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email address" } })} />
+        <Input id="email" type="email" {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email address" } })} className="bg-gray-700" />
         {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
       </div>
       
       <div className="space-y-2">
         <Label htmlFor="occupation">Occupation</Label>
         <Select onValueChange={(value) => register("occupation").onChange({ target: { value } })}>
-          <SelectTrigger>
+          <SelectTrigger className="bg-gray-700">
             <SelectValue placeholder="Select your occupation" />
           </SelectTrigger>
           <SelectContent>
@@ -46,12 +46,12 @@ const ProfileForm = ({ onSave, onCancel, initialData }) => {
       
       <div className="space-y-2">
         <Label htmlFor="interests">Interests</Label>
-        <Textarea id="interests" {...register("interests")} placeholder="Enter your interests (comma-separated)" />
+        <Textarea id="interests" {...register("interests")} placeholder="Enter your interests (comma-separated)" className="bg-gray-700" />
       </div>
       
       <div className="space-y-2">
         <Label htmlFor="bio">Bio</Label>
-        <Textarea id="bio" {...register("bio")} placeholder="Tell us about yourself" />
+        <Textarea id="bio" {...register("bio")} placeholder="Tell us about yourself" className="bg-gray-700" />
       </div>
       
       <div className="flex justify-end space-x-4">

@@ -3,8 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ProfileHeader from '../components/ProfileHeader';
 import ProfileForm from '../components/ProfileForm';
 import ProfilePictureUpload from '../components/ProfilePictureUpload';
+import ScheduleEditor from '../components/ScheduleEditor';
 import { toast } from 'sonner';
 import { Skeleton } from '../components/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 const fetchUserProfile = async () => {
   // Simulating an API call
@@ -13,9 +17,10 @@ const fetchUserProfile = async () => {
     name: 'John Doe',
     email: 'john.doe@example.com',
     occupation: 'developer',
-    interests: 'React, JavaScript, UI/UX',
+    interests: ['React', 'JavaScript', 'UI/UX'],
     bio: 'Passionate developer always learning new technologies.',
     profilePicture: 'https://source.unsplash.com/random/100x100?face',
+    schedule: ['2023-06-15', '2023-06-16', '2023-06-18'],
   };
 };
 
@@ -26,7 +31,7 @@ const updateUserProfile = async (userData) => {
 };
 
 const UserProfile = () => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState('view');
   const queryClient = useQueryClient();
 
   const { data: user, isLoading, isError, error } = useQuery({
@@ -38,7 +43,7 @@ const UserProfile = () => {
     mutationFn: updateUserProfile,
     onSuccess: () => {
       queryClient.invalidateQueries(['userProfile']);
-      setIsEditing(false);
+      setActiveTab('view');
       toast.success('Profile updated successfully');
     },
     onError: (error) => {
@@ -47,16 +52,12 @@ const UserProfile = () => {
     },
   });
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
   const handleSave = async (formData) => {
-    updateProfileMutation.mutate(formData);
+    updateProfileMutation.mutate({ ...user, ...formData });
   };
 
-  const handleCancel = () => {
-    setIsEditing(false);
+  const handleScheduleSave = (newSchedule) => {
+    updateProfileMutation.mutate({ ...user, schedule: newSchedule });
   };
 
   const handleProfilePictureUpload = async () => {
@@ -93,19 +94,54 @@ const UserProfile = () => {
       <ProfileHeader
         name={user.name}
         profilePicture={user.profilePicture}
-        onEdit={handleEdit}
+        onEdit={() => setActiveTab('edit')}
       />
       <ProfilePictureUpload onUpload={handleProfilePictureUpload} />
-      {isEditing ? (
-        <ProfileForm onSave={handleSave} onCancel={handleCancel} initialData={user} />
-      ) : (
-        <div className="bg-gray-800 p-6 rounded-lg">
-          <p className="text-lg mb-4">Email: {user.email}</p>
-          <p className="text-lg mb-4">Occupation: {user.occupation}</p>
-          <p className="text-lg mb-4">Interests: {user.interests}</p>
-          <p className="text-lg mb-4">Bio: {user.bio}</p>
-        </div>
-      )}
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="view">View Profile</TabsTrigger>
+          <TabsTrigger value="edit">Edit Profile</TabsTrigger>
+        </TabsList>
+        <TabsContent value="view">
+          <Card className="bg-gray-800">
+            <CardHeader>
+              <CardTitle>Profile Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p><strong>Email:</strong> {user.email}</p>
+              <p><strong>Occupation:</strong> {user.occupation}</p>
+              <div>
+                <strong>Interests:</strong>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {user.interests.map((interest, index) => (
+                    <Badge key={index} variant="secondary">{interest}</Badge>
+                  ))}
+                </div>
+              </div>
+              <p><strong>Bio:</strong> {user.bio}</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-gray-800 mt-6">
+            <CardHeader>
+              <CardTitle>Your Schedule</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScheduleEditor initialSchedule={user.schedule} onSave={handleScheduleSave} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="edit">
+          <Card className="bg-gray-800">
+            <CardHeader>
+              <CardTitle>Edit Profile</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ProfileForm onSave={handleSave} onCancel={() => setActiveTab('view')} initialData={user} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
