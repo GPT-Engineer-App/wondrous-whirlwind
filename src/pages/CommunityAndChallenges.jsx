@@ -53,7 +53,7 @@ const CommunityCard = ({ community, onJoin }) => {
 const CommunityAndChallenges = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('communities');
-  const [challengeType, setChallengeType] = useState('all');
+  const [challengeType, setChallengeType] = useState('community');
 
   const { data: communities, isLoading: isLoadingCommunities } = useQuery({
     queryKey: ['communities'],
@@ -87,9 +87,7 @@ const CommunityAndChallenges = () => {
   const filteredChallenges = challenges?.filter(challenge =>
     (challenge.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (challenge.community && challenge.community.toLowerCase().includes(searchTerm.toLowerCase()))) &&
-    (challengeType === 'all' || 
-     (challengeType === 'community' && challenge.community) ||
-     (challengeType === 'collective' && !challenge.community))
+    (challengeType === 'community' ? challenge.community : !challenge.community)
   );
 
   return (
@@ -125,12 +123,19 @@ const CommunityAndChallenges = () => {
           )}
         </TabsContent>
         <TabsContent value="challenges">
-          <div className="mb-4">
-            <TabsList>
-              <TabsTrigger value="all" onClick={() => setChallengeType('all')}>All Challenges</TabsTrigger>
-              <TabsTrigger value="community" onClick={() => setChallengeType('community')}>Community Challenges</TabsTrigger>
-              <TabsTrigger value="collective" onClick={() => setChallengeType('collective')}>Collective Challenges</TabsTrigger>
-            </TabsList>
+          <div className="mb-4 flex space-x-4">
+            <Button
+              variant={challengeType === 'community' ? 'default' : 'outline'}
+              onClick={() => setChallengeType('community')}
+            >
+              Community Challenges
+            </Button>
+            <Button
+              variant={challengeType === 'global' ? 'default' : 'outline'}
+              onClick={() => setChallengeType('global')}
+            >
+              Global Challenges
+            </Button>
           </div>
           {isLoadingChallenges ? (
             <p>Loading challenges...</p>

@@ -10,11 +10,13 @@ const ChallengeCard = ({ challenge, onJoin }) => (
       <CardTitle>{challenge.name}</CardTitle>
     </CardHeader>
     <CardContent>
+      {challenge.community ? (
+        <Badge variant="secondary" className="mb-2">Community Challenge</Badge>
+      ) : (
+        <Badge variant="secondary" className="mb-2">Global Challenge</Badge>
+      )}
       {challenge.community && (
         <p className="text-sm text-gray-300 mb-2">Community: {challenge.community}</p>
-      )}
-      {!challenge.community && (
-        <Badge variant="secondary" className="mb-2">Collective Challenge</Badge>
       )}
       <p className="text-sm text-gray-300 mb-2">
         {challenge.startDate} - {challenge.endDate}
