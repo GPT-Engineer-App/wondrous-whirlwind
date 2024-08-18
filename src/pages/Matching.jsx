@@ -10,15 +10,16 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, X, MessageCircle, Calendar } from 'lucide-react';
 import ScheduleDisplay from '../components/ScheduleDisplay';
 
-const fetchMatches = async () => {
+const fetchMatches = async (type) => {
   // Simulated API call
   await new Promise(resolve => setTimeout(resolve, 1000));
-  return [
-    { id: 1, name: "Alice", age: 28, location: "New York", interests: ["React", "Hiking", "Photography"], preferences1: "Technology", preferences2: "Outdoors", schedule: ["2023-06-15", "2023-06-16", "2023-06-18"] },
-    { id: 2, name: "Bob", age: 32, location: "San Francisco", interests: ["JavaScript", "Cooking", "Travel"], preferences1: "Food", preferences2: "Adventure", schedule: ["2023-06-14", "2023-06-17", "2023-06-19"] },
-    { id: 3, name: "Charlie", age: 25, location: "London", interests: ["Python", "Music", "Fitness"], preferences1: "Technology", preferences2: "Health", schedule: ["2023-06-15", "2023-06-17", "2023-06-20"] },
-    { id: 4, name: "Diana", age: 30, location: "Berlin", interests: ["Design", "Yoga", "Reading"], preferences1: "Creativity", preferences2: "Wellness", schedule: ["2023-06-16", "2023-06-18", "2023-06-21"] },
+  const allMatches = [
+    { id: 1, name: "Alice", age: 28, location: "New York", interests: ["React", "Hiking", "Photography"], preferences1: "Technology", preferences2: "Outdoors", schedule: ["2023-06-15", "2023-06-16", "2023-06-18"], type: "community" },
+    { id: 2, name: "Bob", age: 32, location: "San Francisco", interests: ["JavaScript", "Cooking", "Travel"], preferences1: "Food", preferences2: "Adventure", schedule: ["2023-06-14", "2023-06-17", "2023-06-19"], type: "global" },
+    { id: 3, name: "Charlie", age: 25, location: "London", interests: ["Python", "Music", "Fitness"], preferences1: "Technology", preferences2: "Health", schedule: ["2023-06-15", "2023-06-17", "2023-06-20"], type: "community" },
+    { id: 4, name: "Diana", age: 30, location: "Berlin", interests: ["Design", "Yoga", "Reading"], preferences1: "Creativity", preferences2: "Wellness", schedule: ["2023-06-16", "2023-06-18", "2023-06-21"], type: "global" },
   ];
+  return type === 'all' ? allMatches : allMatches.filter(match => match.type === type);
 };
 
 const MatchCard = ({ match, onLike, onPass, onMessage, onSchedule }) => (
@@ -59,10 +60,11 @@ const Matching = () => {
   const [location, setLocation] = useState("");
   const [interest, setInterest] = useState("");
   const [availableToday, setAvailableToday] = useState(false);
+  const [matchType, setMatchType] = useState('all');
 
   const { data: matches, isLoading, error } = useQuery({
-    queryKey: ['matches'],
-    queryFn: fetchMatches,
+    queryKey: ['matches', matchType],
+    queryFn: () => fetchMatches(matchType),
   });
 
   const handleLike = (id) => {
@@ -97,6 +99,27 @@ const Matching = () => {
       <h1 className="text-3xl font-bold mb-6">Find Your Match</h1>
       
       <div className="mb-8 space-y-4">
+        <div className="flex space-x-4 mb-4">
+          <Button
+            onClick={() => setMatchType('all')}
+            variant={matchType === 'all' ? 'default' : 'outline'}
+          >
+            All Matches
+          </Button>
+          <Button
+            onClick={() => setMatchType('community')}
+            variant={matchType === 'community' ? 'default' : 'outline'}
+          >
+            Community Matches
+          </Button>
+          <Button
+            onClick={() => setMatchType('global')}
+            variant={matchType === 'global' ? 'default' : 'outline'}
+          >
+            Global Matches
+          </Button>
+        </div>
+
         <div>
           <label className="block text-sm font-medium mb-2">Age Range</label>
           <div className="flex items-center space-x-4">
