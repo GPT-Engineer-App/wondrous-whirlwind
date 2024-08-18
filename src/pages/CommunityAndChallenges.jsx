@@ -4,10 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Progress } from '../components/ui/progress';
-import { Avatar } from '../components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Search, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import ChallengeCard from '../components/ChallengeCard';
 
 const fetchCommunities = async () => {
   // Simulated API call
@@ -26,6 +25,8 @@ const fetchChallenges = async () => {
     { id: 1, name: '30-Day Fitness Challenge', startDate: '2023-06-01', endDate: '2023-06-30', progress: 60, participants: 1500, community: 'Fitness Enthusiasts' },
     { id: 2, name: 'Summer Reading Challenge', startDate: '2023-07-01', endDate: '2023-08-31', progress: 30, participants: 800, community: 'Book Club' },
     { id: 3, name: 'Coding Marathon', startDate: '2023-08-15', endDate: '2023-08-17', progress: 0, participants: 300, community: 'Tech Innovators' },
+    { id: 4, name: 'Global Fitness Challenge', startDate: '2023-09-01', endDate: '2023-09-30', progress: 10, participants: 5000 },
+    { id: 5, name: 'Worldwide Book Reading', startDate: '2023-10-01', endDate: '2023-10-31', progress: 5, participants: 2000 },
   ];
 };
 
@@ -49,26 +50,10 @@ const CommunityCard = ({ community, onJoin }) => {
   );
 };
 
-const ChallengeCard = ({ challenge, onJoin }) => (
-  <Card className="w-full">
-    <CardHeader>
-      <CardTitle>{challenge.name}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <p className="text-sm text-gray-300 mb-2">Community: {challenge.community}</p>
-      <p className="text-sm text-gray-300 mb-2">
-        {challenge.startDate} - {challenge.endDate}
-      </p>
-      <Progress value={challenge.progress} className="mb-2" />
-      <p className="text-sm text-gray-300 mb-4">{challenge.participants} participants</p>
-      <Button onClick={() => onJoin(challenge.id)}>Join Challenge</Button>
-    </CardContent>
-  </Card>
-);
-
 const CommunityAndChallenges = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('communities');
+  const [challengeType, setChallengeType] = useState('all');
 
   const { data: communities, isLoading: isLoadingCommunities } = useQuery({
     queryKey: ['communities'],
@@ -100,8 +85,11 @@ const CommunityAndChallenges = () => {
   );
 
   const filteredChallenges = challenges?.filter(challenge =>
-    challenge.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    challenge.community.toLowerCase().includes(searchTerm.toLowerCase())
+    (challenge.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (challenge.community && challenge.community.toLowerCase().includes(searchTerm.toLowerCase()))) &&
+    (challengeType === 'all' || 
+     (challengeType === 'community' && challenge.community) ||
+     (challengeType === 'collective' && !challenge.community))
   );
 
   return (
@@ -137,6 +125,13 @@ const CommunityAndChallenges = () => {
           )}
         </TabsContent>
         <TabsContent value="challenges">
+          <div className="mb-4">
+            <TabsList>
+              <TabsTrigger value="all" onClick={() => setChallengeType('all')}>All Challenges</TabsTrigger>
+              <TabsTrigger value="community" onClick={() => setChallengeType('community')}>Community Challenges</TabsTrigger>
+              <TabsTrigger value="collective" onClick={() => setChallengeType('collective')}>Collective Challenges</TabsTrigger>
+            </TabsList>
+          </div>
           {isLoadingChallenges ? (
             <p>Loading challenges...</p>
           ) : (
