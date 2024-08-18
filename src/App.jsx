@@ -10,6 +10,7 @@ import Onboarding from './pages/Onboarding';
 import Auth from './pages/Auth';
 import { isAuthenticated } from './utils/auth';
 import { ThemeProvider } from './components/ThemeProvider';
+import CommunityPage from './components/CommunityPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,6 +49,14 @@ const App = () => (
                       }
                     />
                   ))}
+                  <Route
+                    path="/community/:id"
+                    element={
+                      <PrivateRoute>
+                        <CommunityPage />
+                      </PrivateRoute>
+                    }
+                  />
                   <Route path="*" element={<Navigate to="/onboarding" replace />} />
                 </Routes>
                 {isAuthenticated() && <MobileMenu />}

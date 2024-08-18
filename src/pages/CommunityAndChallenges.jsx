@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -28,18 +29,25 @@ const fetchChallenges = async () => {
   ];
 };
 
-const CommunityCard = ({ community, onJoin }) => (
-  <Card className="w-full">
-    <CardHeader>
-      <CardTitle>{community.name}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <img src={community.image} alt={community.name} className="w-full h-40 object-cover mb-4 rounded-md" />
-      <p className="text-sm text-gray-300 mb-4">{community.description}</p>
-      <Button onClick={() => onJoin(community.id)}>Join Community</Button>
-    </CardContent>
-  </Card>
-);
+const CommunityCard = ({ community, onJoin }) => {
+  const navigate = useNavigate();
+
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>{community.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <img src={community.image} alt={community.name} className="w-full h-40 object-cover mb-4 rounded-md" />
+        <p className="text-sm text-gray-300 mb-4">{community.description}</p>
+        <div className="flex justify-between">
+          <Button onClick={() => navigate(`/community/${community.id}`)}>View Community</Button>
+          <Button onClick={() => onJoin(community.id)} variant="outline">Join Community</Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 const ChallengeCard = ({ challenge, onJoin }) => (
   <Card className="w-full">
