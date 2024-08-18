@@ -1,29 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Paperclip, Smile, Send } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+
+const fetchFriendList = async () => {
+  // Simulated API call
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return [
+    { id: 1, name: 'John Doe', lastMessage: 'Hey, how are you?', timestamp: '2h ago', unread: 2, label: 'work' },
+    { id: 2, name: 'Jane Smith', lastMessage: 'See you tomorrow!', timestamp: '1d ago', unread: 0, label: 'social' },
+    { id: 3, name: 'Study Group', lastMessage: 'Meeting at 3 PM', timestamp: '3h ago', unread: 5, label: 'study' },
+    { id: 5, name: "Eve", lastMessage: 'Nice to meet you!', timestamp: '1h ago', unread: 1, label: 'social' },
+    { id: 6, name: "Frank", lastMessage: 'Looking forward to our chat', timestamp: '30m ago', unread: 0, label: 'work' },
+  ];
+};
 
 const ChatList = () => {
   const [sortBy, setSortBy] = useState('recent');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const chats = [
-    { id: 1, name: 'John Doe', lastMessage: 'Hey, how are you?', timestamp: '2h ago', unread: 2, label: 'work' },
-    { id: 2, name: 'Jane Smith', lastMessage: 'See you tomorrow!', timestamp: '1d ago', unread: 0, label: 'social' },
-    { id: 3, name: 'Study Group', lastMessage: 'Meeting at 3 PM', timestamp: '3h ago', unread: 5, label: 'study' },
-  ];
+  const { data: chats, isLoading, error } = useQuery({
+    queryKey: ['friendList'],
+    queryFn: fetchFriendList,
+  });
 
-  const sortedChats = [...chats].sort((a, b) => {
+  const sortedChats = chats ? [...chats].sort((a, b) => {
     if (sortBy === 'recent') return new Date(b.timestamp) - new Date(a.timestamp);
     if (sortBy === 'unread') return b.unread - a.unread;
     return 0;
-  });
+  }) : [];
 
   const filteredChats = sortedChats.filter(chat =>
     chat.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (isLoading) return <div>Loading chats...</div>;
+  if (error) return <div>Error loading chats: {error.message}</div>;
 
   return (
     <div className="space-y-4">
@@ -77,13 +93,21 @@ const ChatList = () => {
   );
 };
 
-const ChatPage = () => {
+const ChatPage = ({ userId }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
     { id: 1, text: 'Hey there!', sender: 'other', timestamp: '10:00 AM', read: true },
     { id: 2, text: 'Hi! How are you?', sender: 'me', timestamp: '10:05 AM', read: true },
     { id: 3, text: "I'm doing great, thanks for asking!", sender: 'other', timestamp: '10:10 AM', read: false },
   ]);
+
+  useEffect(() => {
+    if (userId) {
+      // Fetch messages for this specific user
+      console.log(`Fetching messages for user ${userId}`);
+      // You would typically make an API call here to get the messages
+    }
+  }, [userId]);
 
   const handleSend = () => {
     if (message.trim()) {
@@ -142,10 +166,14 @@ const ChatPage = () => {
 };
 
 const Messaging = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const userId = searchParams.get('userId');
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
       <h1 className="text-3xl font-bold mb-6">Messaging</h1>
-      <Tabs defaultValue="chats" className="w-full">
+      <Tabs defaultValue={userId ? "active-chat" : "chats"} className="w-full">
         <TabsList>
           <TabsTrigger value="chats">Chats</TabsTrigger>
           <TabsTrigger value="active-chat">Active Chat</TabsTrigger>
@@ -154,7 +182,7 @@ const Messaging = () => {
           <ChatList />
         </TabsContent>
         <TabsContent value="active-chat">
-          <ChatPage />
+          <ChatPage userId={userId} />
         </TabsContent>
       </Tabs>
     </div>

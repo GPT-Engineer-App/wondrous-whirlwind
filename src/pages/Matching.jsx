@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,8 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, MessageCircle, Calendar } from 'lucide-react';
 import ScheduleDisplay from '../components/ScheduleDisplay';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const fetchMatches = async (type) => {
   // Simulated API call
@@ -20,6 +22,15 @@ const fetchMatches = async (type) => {
     { id: 4, name: "Diana", age: 30, location: "Berlin", interests: ["Design", "Yoga", "Reading"], preferences1: "Creativity", preferences2: "Wellness", schedule: ["2023-06-16", "2023-06-18", "2023-06-21"], type: "global" },
   ];
   return type === 'all' ? allMatches : allMatches.filter(match => match.type === type);
+};
+
+const fetchFriendList = async () => {
+  // Simulated API call
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return [
+    { id: 5, name: "Eve", age: 27, location: "Paris" },
+    { id: 6, name: "Frank", age: 31, location: "Tokyo" },
+  ];
 };
 
 const MatchCard = ({ match, onLike, onPass, onMessage, onSchedule }) => (
@@ -61,30 +72,49 @@ const Matching = () => {
   const [interest, setInterest] = useState("");
   const [availableToday, setAvailableToday] = useState(false);
   const [matchType, setMatchType] = useState('all');
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: matches, isLoading, error } = useQuery({
     queryKey: ['matches', matchType],
     queryFn: () => fetchMatches(matchType),
   });
 
+  const { data: friendList } = useQuery({
+    queryKey: ['friendList'],
+    queryFn: fetchFriendList,
+  });
+
+  const addFriendMutation = useMutation({
+    mutationFn: async (matchId) => {
+      // Simulated API call to add friend
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { id: matchId, name: matches.find(m => m.id === matchId).name };
+    },
+    onSuccess: (newFriend) => {
+      queryClient.setQueryData(['friendList'], (oldList) => [...(oldList || []), newFriend]);
+      toast.success(`Added ${newFriend.name} to your friend list!`);
+    },
+    onError: (error) => {
+      toast.error('Failed to add friend. Please try again.');
+    },
+  });
+
   const handleLike = (id) => {
-    console.log(`Liked user with id: ${id}`);
-    // Implement like functionality
+    addFriendMutation.mutate(id);
   };
 
   const handlePass = (id) => {
     console.log(`Passed on user with id: ${id}`);
-    // Implement pass functionality
+    toast.info('Passed on this match');
   };
 
   const handleMessage = (id) => {
-    console.log(`Messaging user with id: ${id}`);
-    // Implement messaging functionality
+    navigate(`/messaging?userId=${id}`);
   };
 
   const handleSchedule = (id) => {
-    console.log(`Viewing schedule for user with id: ${id}`);
-    // Implement schedule viewing functionality
+    navigate(`/calendar?userId=${id}`);
   };
 
   const filteredMatches = matches?.filter(match => 
@@ -182,6 +212,16 @@ const Matching = () => {
       {filteredMatches?.length === 0 && (
         <p className="text-center mt-8">No matches found. Try adjusting your filters.</p>
       )}
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Your Friend List</h2>
+        {friendList?.map(friend => (
+          <div key={friend.id} className="bg-gray-800 p-4 rounded-lg mb-2 flex justify-between items-center">
+            <span>{friend.name}</span>
+            <Badge>{friend.location}</Badge>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
