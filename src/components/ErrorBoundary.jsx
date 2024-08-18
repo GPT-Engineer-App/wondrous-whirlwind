@@ -1,4 +1,5 @@
 import React from 'react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -21,14 +22,14 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="error-boundary p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          <h1 className="text-xl font-bold mb-2">Something went wrong</h1>
-          <details className="whitespace-pre-wrap">
+        <Alert variant="destructive">
+          <AlertTitle>Something went wrong</AlertTitle>
+          <AlertDescription>
             {this.state.error && this.state.error.toString()}
             <br />
             {this.state.errorInfo && this.state.errorInfo.componentStack}
-          </details>
-        </div>
+          </AlertDescription>
+        </Alert>
       );
     }
 

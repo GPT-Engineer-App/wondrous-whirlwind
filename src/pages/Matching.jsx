@@ -88,14 +88,22 @@ const Matching = () => {
   const addFriendMutation = useMutation({
     mutationFn: async (matchId) => {
       // Simulated API call to add friend
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return { id: matchId, name: matches.find(m => m.id === matchId).name };
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (Math.random() < 0.8) {  // 80% success rate
+            resolve({ id: matchId, name: matches.find(m => m.id === matchId).name });
+          } else {
+            reject(new Error('Failed to add friend'));
+          }
+        }, 500);
+      });
     },
     onSuccess: (newFriend) => {
       queryClient.setQueryData(['friendList'], (oldList) => [...(oldList || []), newFriend]);
       toast.success(`Added ${newFriend.name} to your friend list!`);
     },
     onError: (error) => {
+      console.error('Error adding friend:', error);
       toast.error('Failed to add friend. Please try again.');
     },
   });
