@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 const ScheduleEditor = ({ initialSchedule, onSave }) => {
   const [selectedDates, setSelectedDates] = useState(initialSchedule || []);
@@ -21,15 +21,12 @@ const ScheduleEditor = ({ initialSchedule, onSave }) => {
 
   return (
     <Card className="w-full bg-gray-800 text-white">
-      <CardHeader>
-        <CardTitle>Your Availability</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <Calendar
           mode="multiple"
           selected={selectedDates.map(d => new Date(d))}
           onSelect={handleDateSelect}
-          className="rounded-md border border-gray-700"
+          className="rounded-md border border-gray-700 w-full"
         />
         <Button onClick={handleSave} className="mt-4 w-full">Save Schedule</Button>
       </CardContent>

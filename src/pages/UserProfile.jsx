@@ -123,10 +123,7 @@ const UserProfile = () => {
             </CardContent>
           </Card>
           <Card className="bg-gray-800 mt-6">
-            <CardHeader>
-              <CardTitle>Your Schedule</CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <ScheduleEditor initialSchedule={user.schedule} onSave={handleScheduleSave} />
             </CardContent>
           </Card>
