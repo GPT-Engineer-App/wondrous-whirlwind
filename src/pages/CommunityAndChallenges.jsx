@@ -7,27 +7,38 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Plus } from 'lucide-react';
 import ChallengeCard from '../components/ChallengeCard';
+import { toast } from 'sonner';
 
 const fetchCommunities = async () => {
-  // Simulated API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return [
-    { id: 1, name: 'Fitness Enthusiasts', image: 'https://source.unsplash.com/random/300x200?fitness', description: 'A community for fitness lovers' },
-    { id: 2, name: 'Book Club', image: 'https://source.unsplash.com/random/300x200?books', description: 'Discuss your favorite books' },
-    { id: 3, name: 'Tech Innovators', image: 'https://source.unsplash.com/random/300x200?technology', description: 'Explore the latest in tech' },
-  ];
+  try {
+    // Simulated API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return [
+      { id: 1, name: 'Fitness Enthusiasts', image: 'https://source.unsplash.com/random/300x200?fitness', description: 'A community for fitness lovers' },
+      { id: 2, name: 'Book Club', image: 'https://source.unsplash.com/random/300x200?books', description: 'Discuss your favorite books' },
+      { id: 3, name: 'Tech Innovators', image: 'https://source.unsplash.com/random/300x200?technology', description: 'Explore the latest in tech' },
+    ];
+  } catch (error) {
+    console.error('Error fetching communities:', error);
+    throw new Error('Failed to fetch communities');
+  }
 };
 
 const fetchChallenges = async () => {
-  // Simulated API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return [
-    { id: 1, name: '30-Day Fitness Challenge', startDate: '2023-06-01', endDate: '2023-06-30', progress: 60, participants: 1500, community: 'Fitness Enthusiasts' },
-    { id: 2, name: 'Summer Reading Challenge', startDate: '2023-07-01', endDate: '2023-08-31', progress: 30, participants: 800, community: 'Book Club' },
-    { id: 3, name: 'Coding Marathon', startDate: '2023-08-15', endDate: '2023-08-17', progress: 0, participants: 300, community: 'Tech Innovators' },
-    { id: 4, name: 'Global Fitness Challenge', startDate: '2023-09-01', endDate: '2023-09-30', progress: 10, participants: 5000 },
-    { id: 5, name: 'Worldwide Book Reading', startDate: '2023-10-01', endDate: '2023-10-31', progress: 5, participants: 2000 },
-  ];
+  try {
+    // Simulated API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return [
+      { id: 1, name: '30-Day Fitness Challenge', startDate: '2023-06-01', endDate: '2023-06-30', progress: 60, participants: 1500, community: 'Fitness Enthusiasts' },
+      { id: 2, name: 'Summer Reading Challenge', startDate: '2023-07-01', endDate: '2023-08-31', progress: 30, participants: 800, community: 'Book Club' },
+      { id: 3, name: 'Coding Marathon', startDate: '2023-08-15', endDate: '2023-08-17', progress: 0, participants: 300, community: 'Tech Innovators' },
+      { id: 4, name: 'Global Fitness Challenge', startDate: '2023-09-01', endDate: '2023-09-30', progress: 10, participants: 5000 },
+      { id: 5, name: 'Worldwide Book Reading', startDate: '2023-10-01', endDate: '2023-10-31', progress: 5, participants: 2000 },
+    ];
+  } catch (error) {
+    console.error('Error fetching challenges:', error);
+    throw new Error('Failed to fetch challenges');
+  }
 };
 
 const CommunityCard = ({ community, onJoin }) => {
@@ -55,28 +66,39 @@ const CommunityAndChallenges = () => {
   const [activeTab, setActiveTab] = useState('communities');
   const [challengeType, setChallengeType] = useState('community');
 
-  const { data: communities, isLoading: isLoadingCommunities } = useQuery({
+  const { data: communities, isLoading: isLoadingCommunities, error: communitiesError } = useQuery({
     queryKey: ['communities'],
     queryFn: fetchCommunities,
+    onError: (error) => {
+      console.error('Error fetching communities:', error);
+      toast.error('Failed to load communities. Please try again.');
+    },
   });
 
-  const { data: challenges, isLoading: isLoadingChallenges } = useQuery({
+  const { data: challenges, isLoading: isLoadingChallenges, error: challengesError } = useQuery({
     queryKey: ['challenges'],
     queryFn: fetchChallenges,
+    onError: (error) => {
+      console.error('Error fetching challenges:', error);
+      toast.error('Failed to load challenges. Please try again.');
+    },
   });
 
   const handleJoinCommunity = (communityId) => {
     console.log(`Joined community ${communityId}`);
+    toast.success(`Successfully joined community ${communityId}`);
     // Implement join community logic here
   };
 
   const handleJoinChallenge = (challengeId) => {
     console.log(`Joined challenge ${challengeId}`);
+    toast.success(`Successfully joined challenge ${challengeId}`);
     // Implement join challenge logic here
   };
 
   const handleCreateCommunity = () => {
     console.log('Create community clicked');
+    toast.info('Community creation feature coming soon!');
     // Implement create community logic here
   };
 
@@ -89,6 +111,10 @@ const CommunityAndChallenges = () => {
     (challenge.community && challenge.community.toLowerCase().includes(searchTerm.toLowerCase()))) &&
     (challengeType === 'community' ? challenge.community : !challenge.community)
   );
+
+  if (communitiesError || challengesError) {
+    return <div className="text-red-500 p-4">Error loading data. Please try again later.</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
