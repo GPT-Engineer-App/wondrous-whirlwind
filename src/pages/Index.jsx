@@ -5,39 +5,50 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, ThumbsUp, MessageSquare, Share2, Trophy } from 'lucide-react';
+import { toast } from 'sonner';
 
 const fetchDashboardData = async () => {
-  // Simulated API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return {
-    events: [
-      { id: 1, name: 'Team meeting', date: '2023-06-15', description: 'Weekly team sync-up' },
-      { id: 2, name: 'React Conference', date: '2023-07-01', description: 'Annual React developers conference' },
-    ],
-    communityActivity: [
-      { id: 1, type: 'post', content: 'New discussion: Best practices for React hooks', community: 'React Developers', user: 'John Doe', likes: 15, comments: 7 },
-      { id: 2, type: 'challenge', content: '30-day coding challenge: Build a full-stack app', community: 'Full Stack Developers', user: 'Jane Smith', likes: 32, comments: 12 },
-    ],
-    recentActivity: [
-      { id: 1, user: 'Charlotte Parker', content: 'Anyone else really love chapter 12?', time: '4h' },
-      { id: 2, user: 'Tonya Gray', content: "I'm not there yet, wait for meeeee!", time: '4h' },
-    ],
-    challenges: [
-      { id: 1, name: '30-Day Coding Sprint', participants: 1500, daysLeft: 20 },
-      { id: 2, name: 'UI/UX Design Challenge', participants: 800, daysLeft: 5 },
-      { id: 3, name: 'Data Science Hackathon', participants: 1200, daysLeft: 15 },
-    ],
-  };
+  try {
+    // Simulated API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return {
+      events: [
+        { id: 1, name: 'Team meeting', date: '2023-06-15', description: 'Weekly team sync-up' },
+        { id: 2, name: 'React Conference', date: '2023-07-01', description: 'Annual React developers conference' },
+      ],
+      communityActivity: [
+        { id: 1, type: 'post', content: 'New discussion: Best practices for React hooks', community: 'React Developers', user: 'John Doe', likes: 15, comments: 7 },
+        { id: 2, type: 'challenge', content: '30-day coding challenge: Build a full-stack app', community: 'Full Stack Developers', user: 'Jane Smith', likes: 32, comments: 12 },
+      ],
+      recentActivity: [
+        { id: 1, user: 'Charlotte Parker', content: 'Anyone else really love chapter 12?', time: '4h' },
+        { id: 2, user: 'Tonya Gray', content: "I'm not there yet, wait for meeeee!", time: '4h' },
+      ],
+      challenges: [
+        { id: 1, name: '30-Day Coding Sprint', participants: 1500, daysLeft: 20 },
+        { id: 2, name: 'UI/UX Design Challenge', participants: 800, daysLeft: 5 },
+        { id: 3, name: 'Data Science Hackathon', participants: 1200, daysLeft: 15 },
+      ],
+    };
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    throw new Error('Failed to fetch dashboard data');
+  }
 };
 
 const Index = () => {
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['dashboardData'],
     queryFn: fetchDashboardData,
+    retry: 3,
+    onError: (error) => {
+      console.error('Error in useQuery:', error);
+      toast.error('Failed to load dashboard data. Please try again.');
+    },
   });
 
   if (isLoading) return <div className="p-4">Loading dashboard...</div>;
-  if (isError) return <div className="p-4">Error loading dashboard</div>;
+  if (isError) return <div className="p-4">Error loading dashboard: {error.message}</div>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 space-y-6 pb-16 md:pb-0">
