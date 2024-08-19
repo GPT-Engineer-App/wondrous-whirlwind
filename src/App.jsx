@@ -11,6 +11,7 @@ import Auth from './pages/Auth';
 import { isAuthenticated } from './utils/auth';
 import { ThemeProvider } from './components/ThemeProvider';
 import CommunityPage from './components/CommunityPage';
+import FirstTime from './pages/FirstTime';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +39,7 @@ const App = () => (
             <Router>
               <div className="pb-16 md:pb-0">
                 <Routes>
+                  <Route path="/first-time" element={<FirstTime />} />
                   <Route path="/onboarding" element={<Onboarding />} />
                   <Route path="/auth" element={<Auth />} />
                   {navItems.map(({ to, page }) => (
@@ -57,7 +59,7 @@ const App = () => (
                       </PrivateRoute>
                     }
                   />
-                  <Route path="*" element={<Navigate to="/onboarding" replace />} />
+                  <Route path="*" element={<Navigate to="/first-time" replace />} />
                 </Routes>
                 {isAuthenticated() && <MobileMenu />}
               </div>
