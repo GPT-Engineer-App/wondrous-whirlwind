@@ -11,7 +11,7 @@ import Auth from './pages/Auth';
 import { isAuthenticated } from './utils/auth';
 import { ThemeProvider } from './components/ThemeProvider';
 import CommunityPage from './components/CommunityPage';
-import FirstTime from './pages/FirstTime';
+import FirstTime from './components/FirstTime';
 
 const queryClient = new QueryClient({
   defaultOptions: {
