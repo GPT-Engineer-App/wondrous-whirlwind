@@ -9,3 +9,10 @@ export const setupErrorHandlers = () => {
     handlePromiseRejection(event.reason);
   });
 };
+
+export const wrapPromise = (promise) => {
+  return promise.catch((error) => {
+    handlePromiseRejection(error);
+    throw error;
+  });
+};
