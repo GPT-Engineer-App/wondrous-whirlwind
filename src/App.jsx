@@ -14,6 +14,7 @@ import { ThemeProvider } from './components/ThemeProvider';
 import CommunityPage from './components/CommunityPage';
 import FirstTime from './components/FirstTime';
 import { setupErrorHandlers, wrapPromise } from './utils/errorHandling';
+import { SupabaseAuthProvider } from './integrations/supabase/auth';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,40 +40,42 @@ const App = () => {
       <ErrorBoundary>
         <ThemeProvider>
           <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
-              <Toaster />
-              <Router>
-                <div className="flex">
-                  {isAuthenticated() && <WebNavigation />}
-                  <div className="flex-1 pb-16 md:pb-0">
-                    <Routes>
-                      <Route path="/first-time" element={<FirstTime />} />
-                      <Route path="/onboarding" element={<Onboarding />} />
-                      <Route path="/auth" element={<Auth />} />
-                      {navItems.map(({ to, page }) => (
+            <SupabaseAuthProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Router>
+                  <div className="flex">
+                    {isAuthenticated() && <WebNavigation />}
+                    <div className="flex-1 pb-16 md:pb-0">
+                      <Routes>
+                        <Route path="/first-time" element={<FirstTime />} />
+                        <Route path="/onboarding" element={<Onboarding />} />
+                        <Route path="/auth" element={<Auth />} />
+                        {navItems.map(({ to, page }) => (
+                          <Route
+                            key={to}
+                            path={to}
+                            element={
+                              <PrivateRoute>{page}</PrivateRoute>
+                            }
+                          />
+                        ))}
                         <Route
-                          key={to}
-                          path={to}
+                          path="/community/:id"
                           element={
-                            <PrivateRoute>{page}</PrivateRoute>
+                            <PrivateRoute>
+                              <CommunityPage />
+                            </PrivateRoute>
                           }
                         />
-                      ))}
-                      <Route
-                        path="/community/:id"
-                        element={
-                          <PrivateRoute>
-                            <CommunityPage />
-                          </PrivateRoute>
-                        }
-                      />
-                      <Route path="*" element={<Navigate to="/first-time" replace />} />
-                    </Routes>
+                        <Route path="*" element={<Navigate to="/first-time" replace />} />
+                      </Routes>
+                    </div>
                   </div>
-                </div>
-                {isAuthenticated() && <MobileMenu />}
-              </Router>
-            </TooltipProvider>
+                  {isAuthenticated() && <MobileMenu />}
+                </Router>
+              </TooltipProvider>
+            </SupabaseAuthProvider>
           </QueryClientProvider>
         </ThemeProvider>
       </ErrorBoundary>
