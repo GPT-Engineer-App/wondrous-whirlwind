@@ -1,15 +1,32 @@
 // Simulated authentication
-const adminUser = {
+const specialAccount = {
   id: 1,
-  username: 'admin',
-  password: 'admin123',
+  username: 'special_user',
+  password: 'special_password_123',
+  role: 'admin'
 };
 
+const regularUsers = [
+  {
+    id: 2,
+    username: 'regular_user',
+    password: 'regular_password_123',
+    role: 'user'
+  }
+];
+
 export const login = (username, password) => {
-  if (username === adminUser.username && password === adminUser.password) {
-    localStorage.setItem('user', JSON.stringify(adminUser));
+  if (username === specialAccount.username && password === specialAccount.password) {
+    localStorage.setItem('user', JSON.stringify(specialAccount));
     return true;
   }
+
+  const user = regularUsers.find(u => u.username === username && u.password === password);
+  if (user) {
+    localStorage.setItem('user', JSON.stringify(user));
+    return true;
+  }
+
   return false;
 };
 
@@ -24,4 +41,9 @@ export const isAuthenticated = () => {
 export const getUser = () => {
   const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
+};
+
+export const isAdmin = () => {
+  const user = getUser();
+  return user && user.role === 'admin';
 };
