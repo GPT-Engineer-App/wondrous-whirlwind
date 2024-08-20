@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { navItems } from "./nav-items";
 import MobileMenu from "./components/MobileMenu";
+import WebNavigation from "./components/WebNavigation";
 import ErrorBoundary from './components/ErrorBoundary';
 import Onboarding from './pages/Onboarding';
 import Auth from './pages/Auth';
@@ -41,32 +42,35 @@ const App = () => {
             <TooltipProvider>
               <Toaster />
               <Router>
-                <div className="pb-16 md:pb-0">
-                  <Routes>
-                    <Route path="/first-time" element={<FirstTime />} />
-                    <Route path="/onboarding" element={<Onboarding />} />
-                    <Route path="/auth" element={<Auth />} />
-                    {navItems.map(({ to, page }) => (
+                <div className="flex">
+                  {isAuthenticated() && <WebNavigation />}
+                  <div className="flex-1 pb-16 md:pb-0">
+                    <Routes>
+                      <Route path="/first-time" element={<FirstTime />} />
+                      <Route path="/onboarding" element={<Onboarding />} />
+                      <Route path="/auth" element={<Auth />} />
+                      {navItems.map(({ to, page }) => (
+                        <Route
+                          key={to}
+                          path={to}
+                          element={
+                            <PrivateRoute>{page}</PrivateRoute>
+                          }
+                        />
+                      ))}
                       <Route
-                        key={to}
-                        path={to}
+                        path="/community/:id"
                         element={
-                          <PrivateRoute>{page}</PrivateRoute>
+                          <PrivateRoute>
+                            <CommunityPage />
+                          </PrivateRoute>
                         }
                       />
-                    ))}
-                    <Route
-                      path="/community/:id"
-                      element={
-                        <PrivateRoute>
-                          <CommunityPage />
-                        </PrivateRoute>
-                      }
-                    />
-                    <Route path="*" element={<Navigate to="/first-time" replace />} />
-                  </Routes>
-                  {isAuthenticated() && <MobileMenu />}
+                      <Route path="*" element={<Navigate to="/first-time" replace />} />
+                    </Routes>
+                  </div>
                 </div>
+                {isAuthenticated() && <MobileMenu />}
               </Router>
             </TooltipProvider>
           </QueryClientProvider>
