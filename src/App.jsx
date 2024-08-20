@@ -38,7 +38,7 @@ const App = () => {
   return (
     <React.StrictMode>
       <ErrorBoundary>
-        <ThemeProvider>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <QueryClientProvider client={queryClient}>
             <SupabaseAuthProvider>
               <TooltipProvider>

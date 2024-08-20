@@ -2,12 +2,14 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Home, Heart, MessageCircle, Users, Search, User } from 'lucide-react';
+import { Home, Heart, MessageCircle, Users, Search, User, Moon, Sun } from 'lucide-react';
 import { useSupabaseAuth } from '../integrations/supabase/auth';
+import { useTheme } from '../components/ThemeProvider';
 
 const WebNavigation = () => {
   const location = useLocation();
   const { session } = useSupabaseAuth();
+  const { theme, setTheme } = useTheme();
 
   const navItems = [
     { icon: Home, label: 'Home', path: '/' },
@@ -18,7 +20,7 @@ const WebNavigation = () => {
   ];
 
   return (
-    <div className="hidden md:flex justify-between h-16 bg-gray-800 p-4 w-full">
+    <div className="hidden md:flex justify-between items-center h-16 bg-gray-800 p-4 w-full">
       <div className="flex items-center space-x-4">
         <h1 className="text-2xl font-bold text-white mr-8">App Name</h1>
         <nav className="flex space-x-2">
@@ -35,7 +37,15 @@ const WebNavigation = () => {
           ))}
         </nav>
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center space-x-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          aria-label="Toggle theme"
+        >
+          {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+        </Button>
         <Link to="/profile">
           <Button variant="ghost" className="flex items-center">
             <Avatar className="h-8 w-8 mr-2">
