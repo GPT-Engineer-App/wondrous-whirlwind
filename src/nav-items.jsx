@@ -1,11 +1,11 @@
-import { Home, UserPlus, User, Users, MessageCircle, Heart, Search } from "lucide-react";
+import { Home, UserPlus, User, Users, MessageCircle, Heart, Search as SearchIcon } from "lucide-react";
 import Index from "./pages/Index.jsx";
 import Auth from "./pages/Auth.jsx";
 import UserProfile from "./pages/UserProfile.jsx";
 import CommunityAndChallenges from "./pages/CommunityAndChallenges.jsx";
 import Messaging from "./pages/Messaging.jsx";
 import Matching from "./pages/Matching.jsx";
-import Search from "./pages/Search.jsx";
+import SearchPage from "./pages/Search.jsx";
 
 /**
  * Central place for defining the navigation items. Used for navigation components and routing.
@@ -50,7 +50,7 @@ export const navItems = [
   {
     title: "Search",
     to: "/search",
-    icon: <Search className="h-4 w-4" />,
-    page: <Search />,
+    icon: <SearchIcon className="h-4 w-4" />,
+    page: <SearchPage />,
   },
 ];
