@@ -1,10 +1,11 @@
-import { Home, UserPlus, User, Users, MessageSquare, Heart } from "lucide-react";
+import { Home, UserPlus, User, Users, MessageCircle, Heart, Search } from "lucide-react";
 import Index from "./pages/Index.jsx";
 import Auth from "./pages/Auth.jsx";
 import UserProfile from "./pages/UserProfile.jsx";
 import CommunityAndChallenges from "./pages/CommunityAndChallenges.jsx";
 import Messaging from "./pages/Messaging.jsx";
 import Matching from "./pages/Matching.jsx";
+import Search from "./pages/Search.jsx";
 
 /**
  * Central place for defining the navigation items. Used for navigation components and routing.
@@ -37,7 +38,7 @@ export const navItems = [
   {
     title: "Messaging",
     to: "/messaging",
-    icon: <MessageSquare className="h-4 w-4" />,
+    icon: <MessageCircle className="h-4 w-4" />,
     page: <Messaging />,
   },
   {
@@ -45,5 +46,11 @@ export const navItems = [
     to: "/matching",
     icon: <Heart className="h-4 w-4" />,
     page: <Matching />,
+  },
+  {
+    title: "Search",
+    to: "/search",
+    icon: <Search className="h-4 w-4" />,
+    page: <Search />,
   },
 ];

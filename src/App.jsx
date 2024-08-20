@@ -68,7 +68,7 @@ const App = () => {
                             </PrivateRoute>
                           }
                         />
-                        <Route path="*" element={<Navigate to="/first-time" replace />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
                       </Routes>
                     </div>
                     {isAuthenticated() && <MobileMenu />}

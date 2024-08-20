@@ -53,7 +53,7 @@ const Index = () => {
             <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Upcoming Events</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {data.events.slice(0, 2).map((event) => (
+            {data.events.map((event) => (
               <div key={event.id} className="flex justify-between items-center">
                 <div>
                   <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{event.name}</h3>
@@ -73,7 +73,7 @@ const Index = () => {
             <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Community Activity</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {data.communityActivity.slice(0, 1).map((activity) => (
+            {data.communityActivity.map((activity) => (
               <div key={activity.id} className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{activity.user}</span>
@@ -101,7 +101,7 @@ const Index = () => {
             <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Active Challenges</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {data.challenges.slice(0, 2).map((challenge) => (
+            {data.challenges.map((challenge) => (
               <div key={challenge.id} className="flex items-center justify-between">
                 <div>
                   <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{challenge.name}</h3>
@@ -124,7 +124,7 @@ const Index = () => {
             <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            {data.recentActivity.slice(0, 2).map((activity) => (
+            {data.recentActivity.map((activity) => (
               <div key={activity.id} className="flex items-center space-x-4 mb-4">
                 <Avatar>
                   <AvatarImage src={`https://source.unsplash.com/random/100x100?face=${activity.id}`} />
