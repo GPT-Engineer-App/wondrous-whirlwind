@@ -44,7 +44,7 @@ const App = () => {
               <TooltipProvider>
                 <Toaster />
                 <Router>
-                  <div className="flex">
+                  <div className="flex flex-col min-h-screen">
                     {isAuthenticated() && <WebNavigation />}
                     <div className="flex-1 pb-16 md:pb-0">
                       <Routes>
@@ -71,8 +71,8 @@ const App = () => {
                         <Route path="*" element={<Navigate to="/first-time" replace />} />
                       </Routes>
                     </div>
+                    {isAuthenticated() && <MobileMenu />}
                   </div>
-                  {isAuthenticated() && <MobileMenu />}
                 </Router>
               </TooltipProvider>
             </SupabaseAuthProvider>

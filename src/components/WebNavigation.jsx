@@ -18,15 +18,15 @@ const WebNavigation = () => {
   ];
 
   return (
-    <div className="hidden md:flex flex-col justify-between h-screen bg-gray-800 p-4 w-64">
-      <div>
-        <h1 className="text-2xl font-bold text-white mb-8">App Name</h1>
-        <nav className="space-y-2">
+    <div className="hidden md:flex justify-between h-16 bg-gray-800 p-4 w-full">
+      <div className="flex items-center space-x-4">
+        <h1 className="text-2xl font-bold text-white mr-8">App Name</h1>
+        <nav className="flex space-x-2">
           {navItems.map(({ icon: Icon, label, path }) => (
             <Link key={path} to={path}>
               <Button
                 variant={location.pathname === path ? "secondary" : "ghost"}
-                className="w-full justify-start"
+                className="flex items-center"
               >
                 <Icon className="mr-2 h-4 w-4" />
                 {label}
@@ -35,9 +35,9 @@ const WebNavigation = () => {
           ))}
         </nav>
       </div>
-      <div className="mt-auto">
+      <div className="flex items-center">
         <Link to="/profile">
-          <Button variant="ghost" className="w-full justify-start">
+          <Button variant="ghost" className="flex items-center">
             <Avatar className="h-8 w-8 mr-2">
               <AvatarImage src={session?.user?.user_metadata?.avatar_url} />
               <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
