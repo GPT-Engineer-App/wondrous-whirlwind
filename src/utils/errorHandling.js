@@ -1,5 +1,8 @@
+import { toast } from 'sonner';
+
 export const handlePromiseRejection = (error) => {
   console.error('Unhandled Promise Rejection:', error);
+  toast.error(`An error occurred: ${error.message || 'Unknown error'}`);
   // You can add additional error handling logic here, such as sending error reports to a server
 };
 
