@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,7 +13,7 @@ import { isAuthenticated } from './utils/auth';
 import { ThemeProvider } from './components/ThemeProvider';
 import CommunityPage from './components/CommunityPage';
 import FirstTime from './components/FirstTime';
-import { setupErrorHandlers, wrapPromise, asyncErrorBoundary } from './utils/errorHandling';
+import { setupErrorHandlers, wrapPromise } from './utils/errorHandling';
 import { SupabaseAuthProvider } from './integrations/supabase/auth';
 
 const queryClient = new QueryClient({
@@ -31,7 +31,7 @@ const PrivateRoute = ({ children }) => {
 };
 
 const App = () => {
-  useEffect(() => {
+  React.useEffect(() => {
     setupErrorHandlers();
   }, []);
 
@@ -56,7 +56,7 @@ const App = () => {
                             key={to}
                             path={to}
                             element={
-                              <PrivateRoute>{asyncErrorBoundary(page)}</PrivateRoute>
+                              <PrivateRoute>{page}</PrivateRoute>
                             }
                           />
                         ))}
@@ -68,7 +68,7 @@ const App = () => {
                             </PrivateRoute>
                           }
                         />
-                        <Route path="*" element={<Navigate to="/" replace />} />
+                        <Route path="*" element={<Navigate to="/first-time" replace />} />
                       </Routes>
                     </div>
                     {isAuthenticated() && <MobileMenu />}
