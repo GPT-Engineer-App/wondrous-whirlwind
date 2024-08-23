@@ -66,12 +66,15 @@ const MatchCard = ({ match, onLike, onPass, onMessage, onSchedule }) => (
   </Card>
 );
 
+import DetailedProfileView from '../components/DetailedProfileView';
+
 const Matching = () => {
   const [ageRange, setAgeRange] = useState([20, 40]);
   const [location, setLocation] = useState("");
   const [interest, setInterest] = useState("");
   const [availableToday, setAvailableToday] = useState(false);
   const [matchType, setMatchType] = useState('all');
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -123,6 +126,10 @@ const Matching = () => {
 
   const handleSchedule = (id) => {
     navigate(`/calendar?userId=${id}`);
+  };
+
+  const handleViewProfile = (id) => {
+    setSelectedUserId(id);
   };
 
   const filteredMatches = matches?.filter(match => 
@@ -224,12 +231,18 @@ const Matching = () => {
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">Your Friend List</h2>
         {friendList?.map(friend => (
-          <div key={friend.id} className="bg-gray-800 p-4 rounded-lg mb-2 flex justify-between items-center">
+          <div key={friend.id} className="bg-gray-800 p-4 rounded-lg mb-2 flex justify-between items-center cursor-pointer" onClick={() => handleViewProfile(friend.id)}>
             <span>{friend.name}</span>
             <Badge>{friend.location}</Badge>
           </div>
         ))}
       </div>
+
+      {selectedUserId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <DetailedProfileView userId={selectedUserId} onClose={() => setSelectedUserId(null)} />
+        </div>
+      )}
     </div>
   );
 };
