@@ -39,6 +39,12 @@ const App = () => {
       handlePromiseRejection(error || new Error(message));
       return true; // Prevent the default error handling
     };
+
+    // Add a global unhandled promise rejection handler
+    window.onunhandledrejection = (event) => {
+      event.preventDefault();
+      handlePromiseRejection(event.reason);
+    };
   }, []);
 
   return (
