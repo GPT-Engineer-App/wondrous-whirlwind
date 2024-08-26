@@ -13,7 +13,7 @@ import { isAuthenticated } from './utils/auth';
 import { ThemeProvider } from './components/ThemeProvider';
 import CommunityPage from './components/CommunityPage';
 import FirstTime from './components/FirstTime';
-import { setupErrorHandlers, wrapPromise, handlePromiseRejection } from './utils/errorHandling';
+import { setupErrorHandlers, wrapPromise } from './utils/errorHandling';
 import { SupabaseAuthProvider } from './integrations/supabase/auth';
 
 const queryClient = new QueryClient({
@@ -33,18 +33,6 @@ const PrivateRoute = ({ children }) => {
 const App = () => {
   React.useEffect(() => {
     setupErrorHandlers();
-    
-    // Add a global error handler for any uncaught errors
-    window.onerror = (message, source, lineno, colno, error) => {
-      handlePromiseRejection(error || new Error(message));
-      return true; // Prevent the default error handling
-    };
-
-    // Add a global unhandled promise rejection handler
-    window.onunhandledrejection = (event) => {
-      event.preventDefault();
-      handlePromiseRejection(event.reason);
-    };
   }, []);
 
   return (

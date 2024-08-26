@@ -9,25 +9,40 @@ import { Skeleton } from '../components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { updateUserProfile, fetchUserProfile } from '../utils/supabase';
-import { useSupabaseAuth } from '../integrations/supabase/auth';
+
+const fetchUserProfile = async () => {
+  // Simulating an API call
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return {
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    occupation: 'developer',
+    interests: ['React', 'JavaScript', 'UI/UX'],
+    bio: 'Passionate developer always learning new technologies.',
+    profilePicture: 'https://source.unsplash.com/random/100x100?face',
+    schedule: ['2023-06-15', '2023-06-16', '2023-06-18'],
+  };
+};
+
+const updateUserProfile = async (userData) => {
+  // Simulating an API call
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return userData;
+};
 
 const UserProfile = () => {
   const [activeTab, setActiveTab] = useState('view');
   const queryClient = useQueryClient();
-  const { session } = useSupabaseAuth();
-  const userId = session?.user?.id;
 
   const { data: user, isLoading, isError, error } = useQuery({
-    queryKey: ['userProfile', userId],
-    queryFn: () => fetchUserProfile(userId),
-    enabled: !!userId,
+    queryKey: ['userProfile'],
+    queryFn: fetchUserProfile,
   });
 
   const updateProfileMutation = useMutation({
-    mutationFn: (formData) => updateUserProfile(userId, formData),
+    mutationFn: updateUserProfile,
     onSuccess: () => {
-      queryClient.invalidateQueries(['userProfile', userId]);
+      queryClient.invalidateQueries(['userProfile']);
       setActiveTab('view');
       toast.success('Profile updated successfully');
     },
@@ -38,17 +53,17 @@ const UserProfile = () => {
   });
 
   const handleSave = async (formData) => {
-    updateProfileMutation.mutate(formData);
+    updateProfileMutation.mutate({ ...user, ...formData });
   };
 
   const handleScheduleSave = (newSchedule) => {
-    updateProfileMutation.mutate({ schedule: newSchedule });
+    updateProfileMutation.mutate({ ...user, schedule: newSchedule });
   };
 
   const handleProfilePictureUpload = async () => {
     // Generate a new random profile picture URL
     const newProfilePicture = `https://source.unsplash.com/random/100x100?face&${Date.now()}`;
-    updateProfileMutation.mutate({ profilePicture: newProfilePicture });
+    updateProfileMutation.mutate({ ...user, profilePicture: newProfilePicture });
     toast.success('Profile picture updated successfully');
   };
 
