@@ -13,7 +13,6 @@ import { isAuthenticated } from './utils/auth';
 import { ThemeProvider } from './components/ThemeProvider';
 import CommunityPage from './components/CommunityPage';
 import FirstTime from './components/FirstTime';
-import NearbyPeople from './components/NearbyPeople';
 import { setupErrorHandlers, wrapPromise, handleError } from './utils/errorHandling';
 import { SupabaseAuthProvider } from './integrations/supabase/auth';
 
@@ -78,14 +77,6 @@ const App = () => {
                           element={
                             <PrivateRoute>
                               <CommunityPage />
-                            </PrivateRoute>
-                          }
-                        />
-                        <Route
-                          path="/nearby"
-                          element={
-                            <PrivateRoute>
-                              <NearbyPeople />
                             </PrivateRoute>
                           }
                         />
