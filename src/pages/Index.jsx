@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, ThumbsUp, MessageSquare, Share2, Trophy } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import { useTheme } from '../components/ThemeProvider';
+import { LanguageContext } from '../App';
 
 const fetchDashboardData = async () => {
   // Simulated API call
@@ -38,6 +39,7 @@ const Index = () => {
     queryFn: fetchDashboardData,
   });
   const { theme } = useTheme();
+  const { language, setLanguage, translations } = useContext(LanguageContext);
 
   if (isLoading) return <div className="p-4">Loading dashboard...</div>;
   if (isError) return <div className="p-4">Error loading dashboard</div>;
@@ -45,12 +47,26 @@ const Index = () => {
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} p-4 space-y-6 pb-16 md:pb-0`}>
       <ThemeToggle />
-      <h1 className={`text-3xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Home Dashboard</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          {translations.dashboard || "Home Dashboard"}
+        </h1>
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          className="bg-gray-700 text-white rounded p-2"
+        >
+          <option value="en">English</option>
+          <option value="tr">Türkçe</option>
+        </select>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}>
           <CardHeader>
-            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Upcoming Events</CardTitle>
+            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {translations.upcomingEvents || "Upcoming Events"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {data.events.slice(0, 2).map((event) => (
@@ -70,7 +86,9 @@ const Index = () => {
 
         <Card className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}>
           <CardHeader>
-            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Community Activity</CardTitle>
+            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {translations.communityActivity || "Community Activity"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {data.communityActivity.slice(0, 1).map((activity) => (
@@ -98,21 +116,25 @@ const Index = () => {
 
         <Card className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}>
           <CardHeader>
-            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Active Challenges</CardTitle>
+            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {translations.activeChallenges || "Active Challenges"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {data.challenges.slice(0, 2).map((challenge) => (
               <div key={challenge.id} className="flex items-center justify-between">
                 <div>
                   <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{challenge.name}</h3>
-                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{challenge.participants} participants</p>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {challenge.participants} {translations.participants || "participants"}
+                  </p>
                 </div>
                 <div className="text-right">
                   <Badge variant="secondary" className="mb-1">
                     <Trophy className="mr-1 h-3 w-3" />
-                    {challenge.daysLeft} days left
+                    {challenge.daysLeft} {translations.daysLeft || "days left"}
                   </Badge>
-                  <Button size="sm">Join</Button>
+                  <Button size="sm">{translations.join || "Join"}</Button>
                 </div>
               </div>
             ))}
@@ -121,7 +143,9 @@ const Index = () => {
 
         <Card className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}>
           <CardHeader>
-            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Recent Activity</CardTitle>
+            <CardTitle className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {translations.recentActivity || "Recent Activity"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {data.recentActivity.slice(0, 2).map((activity) => (

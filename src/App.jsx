@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -15,6 +15,9 @@ import CommunityPage from './components/CommunityPage';
 import FirstTime from './components/FirstTime';
 import { setupErrorHandlers, wrapPromise, handleError } from './utils/errorHandling';
 import { SupabaseAuthProvider } from './integrations/supabase/auth';
+import trTranslations from './locales/tr.json';
+
+export const LanguageContext = createContext();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +34,9 @@ const PrivateRoute = ({ children }) => {
 };
 
 const App = () => {
+  const [language, setLanguage] = useState('en');
+  const translations = language === 'tr' ? trTranslations : {};
+
   React.useEffect(() => {
     setupErrorHandlers();
     
@@ -53,40 +59,42 @@ const App = () => {
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <QueryClientProvider client={queryClient}>
             <SupabaseAuthProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Router>
-                  <div className="flex flex-col min-h-screen">
-                    {isAuthenticated() && <WebNavigation />}
-                    <div className="flex-1 pb-16 md:pb-0">
-                      <Routes>
-                        <Route path="/first-time" element={<FirstTime />} />
-                        <Route path="/onboarding" element={<Onboarding />} />
-                        <Route path="/auth" element={<Auth />} />
-                        {navItems.map(({ to, page }) => (
+              <LanguageContext.Provider value={{ language, setLanguage, translations }}>
+                <TooltipProvider>
+                  <Toaster />
+                  <Router>
+                    <div className="flex flex-col min-h-screen">
+                      {isAuthenticated() && <WebNavigation />}
+                      <div className="flex-1 pb-16 md:pb-0">
+                        <Routes>
+                          <Route path="/first-time" element={<FirstTime />} />
+                          <Route path="/onboarding" element={<Onboarding />} />
+                          <Route path="/auth" element={<Auth />} />
+                          {navItems.map(({ to, page }) => (
+                            <Route
+                              key={to}
+                              path={to}
+                              element={
+                                <PrivateRoute>{page}</PrivateRoute>
+                              }
+                            />
+                          ))}
                           <Route
-                            key={to}
-                            path={to}
+                            path="/community/:id"
                             element={
-                              <PrivateRoute>{page}</PrivateRoute>
+                              <PrivateRoute>
+                                <CommunityPage />
+                              </PrivateRoute>
                             }
                           />
-                        ))}
-                        <Route
-                          path="/community/:id"
-                          element={
-                            <PrivateRoute>
-                              <CommunityPage />
-                            </PrivateRoute>
-                          }
-                        />
-                        <Route path="*" element={<Navigate to="/first-time" replace />} />
-                      </Routes>
+                          <Route path="*" element={<Navigate to="/first-time" replace />} />
+                        </Routes>
+                      </div>
+                      {isAuthenticated() && <MobileMenu />}
                     </div>
-                    {isAuthenticated() && <MobileMenu />}
-                  </div>
-                </Router>
-              </TooltipProvider>
+                  </Router>
+                </TooltipProvider>
+              </LanguageContext.Provider>
             </SupabaseAuthProvider>
           </QueryClientProvider>
         </ThemeProvider>
