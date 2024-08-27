@@ -4,11 +4,13 @@ import ProfileHeader from '../components/ProfileHeader';
 import ProfileForm from '../components/ProfileForm';
 import ProfilePictureUpload from '../components/ProfilePictureUpload';
 import ScheduleEditor from '../components/ScheduleEditor';
+import ChallengesList from '../components/ChallengesList';
 import { toast } from 'sonner';
 import { Skeleton } from '../components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const fetchUserProfile = async () => {
   // Simulating an API call
@@ -21,6 +23,11 @@ const fetchUserProfile = async () => {
     bio: 'Passionate developer always learning new technologies.',
     profilePicture: 'https://source.unsplash.com/random/100x100?face',
     schedule: ['2023-06-15', '2023-06-16', '2023-06-18'],
+    challenges: [
+      { id: 1, name: '30-Day Coding Challenge', description: 'Code every day for 30 days', status: 'In Progress', progress: 60 },
+      { id: 2, name: 'Learn a New Framework', description: 'Master a new JavaScript framework', status: 'Not Started', progress: 0 },
+    ],
+    challengesVisibility: 'friends',
   };
 };
 
@@ -65,6 +72,10 @@ const UserProfile = () => {
     const newProfilePicture = `https://source.unsplash.com/random/100x100?face&${Date.now()}`;
     updateProfileMutation.mutate({ ...user, profilePicture: newProfilePicture });
     toast.success('Profile picture updated successfully');
+  };
+
+  const handleChallengesVisibilityChange = (newVisibility) => {
+    updateProfileMutation.mutate({ ...user, challengesVisibility: newVisibility });
   };
 
   if (isLoading) {
@@ -121,6 +132,29 @@ const UserProfile = () => {
           <Card className="bg-gray-800 mt-6">
             <CardContent className="p-0">
               <ScheduleEditor initialSchedule={user.schedule} onSave={handleScheduleSave} />
+            </CardContent>
+          </Card>
+          <Card className="bg-gray-800 mt-6">
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center">
+                <span>Joined Challenges</span>
+                <Select
+                  value={user.challengesVisibility}
+                  onValueChange={handleChallengesVisibilityChange}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select visibility" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="everyone">Everyone</SelectItem>
+                    <SelectItem value="friends">Friends</SelectItem>
+                    <SelectItem value="onlyme">Only Me</SelectItem>
+                  </SelectContent>
+                </Select>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChallengesList challenges={user.challenges} visibility={user.challengesVisibility} />
             </CardContent>
           </Card>
         </TabsContent>
