@@ -78,6 +78,10 @@ const UserProfile = () => {
     updateProfileMutation.mutate({ ...user, challengesVisibility: newVisibility });
   };
 
+  const handleChallengesVisibilityChange = (newVisibility) => {
+    updateProfileMutation.mutate({ ...user, challengesVisibility: newVisibility });
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8 max-w-3xl mx-auto">
